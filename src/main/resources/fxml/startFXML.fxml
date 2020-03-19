@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: fbf1e1;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="td.controllers.StartController">
+    <children>
+      <Button fx:id="fileButton" layoutX="453.0" layoutY="288.0" mnemonicParsing="false" onAction="#clickFileButton" text="Выбрать файл" />
+    </children>
+</AnchorPane>
