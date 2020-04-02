@@ -23,6 +23,7 @@ public class Section {
     public Section() {
         this.subheadersList = new ArrayList<>();
         this.subheadersSet = new HashSet<>();
+        this.content = new ArrayList<>();
     }
 
     public Section(Section parentHeader) {
