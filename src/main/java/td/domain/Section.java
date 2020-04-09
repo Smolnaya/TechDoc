@@ -7,6 +7,11 @@ import java.util.Set;
 
 public class Section {
     private int level;
+    private String title;
+    private List<Section> subheadersList;
+    private Set<Section> subheadersSet;
+    private Section parentHeader;
+    private List<String> content;
     private String fontStyleName;
     private int fontSize;
     private Boolean fontBold;
@@ -14,11 +19,6 @@ public class Section {
     private String alignment;
     private Boolean upperCase;
     private int indent;
-    private String title;
-    private List<Section> subheadersList;
-    private Set<Section> subheadersSet;
-    private Section parentHeader;
-    private List<String> content;
 
     public Section() {
         this.subheadersList = new ArrayList<>();
