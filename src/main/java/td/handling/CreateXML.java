@@ -5,17 +5,11 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import td.domain.WordDocument;
 
@@ -29,10 +23,7 @@ public class CreateXML {
 
             for (int i = 0; i < wordDocument.getSections().size(); i++) {
                 Element section = xmlDocument.createElement("section");
-
-                Element level = xmlDocument.createElement("level");
-                level.setTextContent(Integer.toString(wordDocument.getSections().get(i).getLevel()));
-                section.appendChild(level);
+                section.setAttribute("level", Integer.toString(wordDocument.getSections().get(i).getLevel()));
 
                 Element title = xmlDocument.createElement("title");
                 title.setTextContent(wordDocument.getSections().get(i).getTitle());
@@ -64,6 +55,8 @@ public class CreateXML {
             DOMSource source = new DOMSource(document);
             FileOutputStream fos = new FileOutputStream("src/main/java/td/xml/newstructure.xml");
             StreamResult result = new StreamResult(fos);
+            tr.setOutputProperty(OutputKeys.INDENT, "yes");
+            tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             tr.transform(source, result);
         } catch (TransformerException | IOException e) {
             e.printStackTrace(System.out);
