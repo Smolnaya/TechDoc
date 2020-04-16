@@ -1,19 +1,56 @@
 import org.junit.jupiter.api.Test;
 import td.domain.WordDocument;
-import td.handling.Cheking;
-import td.handling.CreateXML;
+import td.services.Service;
+import td.services.CreateXML;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestFile {
+    private Path path = Paths.get("src/test/doc/gqw.docx");
+    private Service service = new Service();
 
     @Test
-    public void testXML() {
-        Cheking cheking = new Cheking();
-        Path path = Paths.get("src/test/doc/gqw.docx");
+    public void checkCreate() {
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(1);
+        list.add(1);
+        list.add(2);
+        list.add(2);
+        list.add(2);
+        list.add(3);
+        list.add(2);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(2);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        Create xml = new Create();
+        xml.addNewDocument(list);
+    }
+
+    @Test
+    public void checkHeadersText() {
         try {
-            WordDocument document = cheking.checkHeadersLevel(path);
+            WordDocument document = service.checkHeadersLevel(path);
+            List<Integer> staticHeaders = service.findStaticHeaders(document);
+            for (int i = 0; i < staticHeaders.size(); i++) {
+                System.out.println(staticHeaders.get(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void xml() {
+        try {
+            WordDocument document = service.checkHeadersLevel(path);
             CreateXML createXML = new CreateXML();
             createXML.addNewDocument(document);
         } catch (Exception e) {
@@ -22,11 +59,9 @@ public class TestFile {
     }
 
     @Test
-    public void testCheking() {
-        Cheking cheking = new Cheking();
-        Path path = Paths.get("src/test/doc/gqw.docx");
+    public void checking() {
         try {
-            WordDocument document = cheking.checkHeadersLevel(path);
+            WordDocument document = service.checkHeadersLevel(path);
             System.out.println("Headers: ");
             document.printDocumentHeaders();
             System.out.println("\nContent: ");

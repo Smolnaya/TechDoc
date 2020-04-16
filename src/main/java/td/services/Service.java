@@ -1,4 +1,4 @@
-package td.handling;
+package td.services;
 
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -7,20 +7,18 @@ import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import td.domain.WordDocument;
 import td.domain.Section;
+import td.exceptions.LackOfHeadingsException;
 import td.exceptions.WrongLevelException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Cheking {
-
-    public Cheking() {
-    }
+public class Service {
 
     public WordDocument checkHeadersLevel(Path path) throws Exception {
-//        Path path = Paths.get("src/test/doc/gqw.docx");
         try {
             XWPFDocument document = new XWPFDocument(Files.newInputStream(path));
             List<XWPFParagraph> paragraphs = document.getParagraphs();
@@ -70,6 +68,32 @@ public class Cheking {
         } catch (IOException | NotOfficeXmlFileException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public List<Integer> findStaticHeaders(WordDocument wordDocument) throws LackOfHeadingsException {
+        if (wordDocument.getSections().size() > 0) {
+            List<Section> sections = wordDocument.getSections();
+            List<Integer> resultList = new ArrayList<>();
+            for (int i = 0; i < sections.size(); i++) {
+                if (sections.get(i).getTitle().equals("ВВЕДЕНИЕ")) {
+                    resultList.add(1);
+                } else if (sections.get(i).getTitle().equals("ЗАКЛЮЧЕНИЕ")) {
+                    resultList.add(2);
+                } else if (sections.get(i).getTitle().equals("СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ") ||
+                        sections.get(i).getTitle().equals("СПИСОК ИСТОЧНИКОВ") ||
+                        sections.get(i).getTitle().equals("СПИСОК ЛИТЕРАТУРЫ") ||
+                        sections.get(i).getTitle().equals("СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ") ||
+                        sections.get(i).getTitle().equals("СПИСОК ИСПОЛЬЗУЕМОЙ ЛИТЕРАТУРЫ") ||
+                        sections.get(i).getTitle().equals("БИБЛИОГРАФИЧЕСКИЙ СПИСОК")) {
+                    resultList.add(3);
+                } else if (sections.get(i).getTitle().equals("ПРИЛОЖЕНИЯ")) {
+                    resultList.add(4);
+                }
+            }
+            return resultList;
+        } else {
+            throw new LackOfHeadingsException("There are no headings in the document.");
         }
     }
 }
