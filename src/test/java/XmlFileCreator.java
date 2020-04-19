@@ -11,7 +11,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-public class Create {
+public class XmlFileCreator {
     public void addNewDocument(List<Integer> list) throws TransformerFactoryConfigurationError, DOMException {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -19,26 +19,29 @@ public class Create {
             int currentLevel = 1;
             Element parentElement = xmlDocument.getDocumentElement();
             Element currentElement = xmlDocument.createElement("section");
+
             for (int i = 0; i < list.size(); i++) {
-                if (currentLevel == list.get(i)) {
+                Integer elementLevel = list.get(i);
+                if (currentLevel == elementLevel) {
                     Element section = xmlDocument.createElement("section");
-                    section.setAttribute("level", Integer.toString(list.get(i)));
+                    section.setAttribute("level", Integer.toString(elementLevel));
                     parentElement.appendChild(section);
                     currentElement = section;
-                } else if (currentLevel < list.get(i)) {
+                } else if (currentLevel < elementLevel) {
                     parentElement = currentElement;
                     Element section = xmlDocument.createElement("section");
-                    section.setAttribute("level", Integer.toString(list.get(i)));
+                    section.setAttribute("level", Integer.toString(elementLevel));
                     parentElement.appendChild(section);
                     currentLevel++;
+                    currentElement = section;
                 }
-                else if (currentLevel > list.get(i)) {
-                    while (Integer.parseInt(parentElement.getAttribute("level")) >= list.get(i)) {
+                else if (currentLevel > elementLevel) {
+                    while (Integer.parseInt(parentElement.getAttribute("level")) >= elementLevel) {
                         parentElement = (Element) parentElement.getParentNode();
                         currentLevel--;
                     }
                     Element section = xmlDocument.createElement("section");
-                    section.setAttribute("level", Integer.toString(list.get(i)));
+                    section.setAttribute("level", Integer.toString(elementLevel));
                     parentElement.appendChild(section);
                     currentElement = section;
                 }
@@ -49,7 +52,7 @@ public class Create {
         }
     }
 
-    private static void writeDocument(Document document) throws TransformerFactoryConfigurationError {
+    public void writeDocument(Document document) throws TransformerFactoryConfigurationError {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
