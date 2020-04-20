@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test;
 import td.domain.WordDocument;
 import td.services.Service;
-import td.services.CreateXML;
+import td.services.XmlFileCreator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,24 +14,14 @@ public class TestFile {
 
     @Test
     public void checkCreate() {
-        List<Integer> list = new ArrayList<Integer>();
-        list.add(1);
-        list.add(1);
-            list.add(2);
-                list.add(3);
-            list.add(2);
-                list.add(3);
-            list.add(2);
-        list.add(1);
-            list.add(2);
-                list.add(3);
-                    list.add(4);
-            list.add(2);
-        list.add(1);
-            list.add(2);
-            list.add(3);
         XmlFileCreator xml = new XmlFileCreator();
-        xml.addNewDocument(list);
+        WordDocument document = null;
+        try {
+            document = service.checkHeadersLevel(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        xml.addNewDocument(document);
     }
 
     @Test
@@ -51,7 +41,7 @@ public class TestFile {
     public void xml() {
         try {
             WordDocument document = service.checkHeadersLevel(path);
-            CreateXML createXML = new CreateXML();
+            XmlFileCreator createXML = new XmlFileCreator();
             createXML.addNewDocument(document);
         } catch (Exception e) {
             e.printStackTrace();
