@@ -1,94 +1,126 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:annotation>
+    <xs:appinfo>
+        schema appinfo
+    </xs:appinfo>
+</xs:annotation>
 
     <xs:element name="section">
+        <xs:annotation>
+            <xs:appinfo>
+                section appinfo
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="title" type="xs:string"/>
                 <xs:element name="content" type="xs:string" minOccurs="0"/>
-                <xs:element ref="section" minOccurs="0" maxOccurs="10"/>
+                <xs:element ref="section" minOccurs="0"/>
             </xs:sequence>
-            <xs:attribute name="level" type="xs:int"/>
+            <!-- От до-->
+            <xs:attribute name="level" type="xs:int" use="required"/>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="document">
+        <xs:annotation>
+            <xs:appinfo>
+                document appinfo
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:sequence>
 
                 <!--ВВЕДЕНИЕ-->
-                <xs:element ref="section" minOccurs="1" maxOccurs="1">
+                <xs:element ref="section">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Правила введения
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="title" type="xs:string" default="ВВЕДЕНИЕ"/>
-                            <xs:element name="content" type="xs:string"/>
-                            <xs:element ref="section" maxOccurs="0"/>
+                            <xs:element ref="section"/>
                         </xs:sequence>
-                        <xs:attribute name="level" type="xs:int" default="1" use="required"/>
+                        <xs:attribute name="level" fixed="1"/>
                     </xs:complexType>
                 </xs:element>
 
-                <!--ГЛАВЫ 1 УРОВНЯ-->
-                <xs:element ref="section" minOccurs="1" maxOccurs="3">
+
+                <!--ГЛАВЫ-->
+                <xs:element ref="section" maxOccurs="10">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Правила 1 уровня
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="title" type="xs:string"/>
-                            <xs:element name="content" type="xs:string" minOccurs="0"/>
-
-                            <!--ГЛАВЫ 2 УРОВНЯ-->
-                            <xs:element ref="section" minOccurs="3" maxOccurs="10">
+                            <xs:element ref="section" maxOccurs="10">
+                                <xs:annotation>
+                                    <xs:appinfo>
+                                        text
+                                    </xs:appinfo>
+                                    <xs:documentation>
+                                        Правила 2 уровня
+                                    </xs:documentation>
+                                </xs:annotation>
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="title" type="xs:string"/>
-                                        <xs:element name="content" type="xs:string" minOccurs="0"/>
-
-                                        <!--ГЛАВЫ 3 УРОВНЯ-->
-                                        <xs:element ref="section" minOccurs="0">
+                                        <xs:element ref="section" maxOccurs="10">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Правила 3 уровня
+                                                </xs:documentation>
+                                            </xs:annotation>
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="title" type="xs:string"/>
-                                                    <xs:element name="content" type="xs:string" minOccurs="0"/>
-                                                    <xs:element ref="section" minOccurs="0"/>
+                                                    <xs:element ref="section" maxOccurs="10"/>
                                                 </xs:sequence>
-                                                <xs:attribute name="level" type="xs:int" default="3"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
-                                    <xs:attribute name="level" type="xs:int" default="2"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
-                        <xs:attribute name="level" type="xs:int" default="1" />
+                        <xs:attribute name="level"/>
                     </xs:complexType>
                 </xs:element>
 
                 <!--ЗАКЛЮЧЕНИЕ-->
-                <xs:element ref="section" minOccurs="1" maxOccurs="1" >
+                <xs:element ref="section">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Правила
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="title" type="xs:string" default="ЗАКЛЮЧЕНИЕ"/>
-                            <xs:element name="content" type="xs:string"/>
-                            <xs:element ref="section" maxOccurs="0"/>
+                            <xs:element ref="section"/>
                         </xs:sequence>
-                        <xs:attribute name="level" type="xs:int" default="1" />
+                        <xs:attribute name="level"/>
                     </xs:complexType>
                 </xs:element>
 
                 <!--СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ-->
-                <xs:element ref="section" >
+                <xs:element ref="section">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Правила
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="title" type="xs:string" default="СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ"/>
-                            <xs:element name="content" type="xs:string" minOccurs="0"/>
-                            <xs:element ref="section" maxOccurs="0"/>
+                            <xs:element ref="section"/>
                         </xs:sequence>
-                        <xs:attribute name="level" type="xs:int" default="1" />
+                        <xs:attribute name="level"/>
                     </xs:complexType>
                 </xs:element>
 
             </xs:sequence>
-            <xs:attribute name="level" default="0"/>
+            <xs:attribute name="level" fixed="0"/>
+            <xs:attribute name="checkAbbr" use="optional" type="xs:boolean"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

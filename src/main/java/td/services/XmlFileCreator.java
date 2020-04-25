@@ -1,17 +1,17 @@
 package td.services;
 
-        import java.io.FileOutputStream;
-        import java.io.IOException;
-        import javax.xml.parsers.DocumentBuilder;
-        import javax.xml.parsers.DocumentBuilderFactory;
-        import javax.xml.parsers.ParserConfigurationException;
-        import javax.xml.transform.*;
-        import javax.xml.transform.dom.DOMSource;
-        import javax.xml.transform.stream.StreamResult;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-        import org.w3c.dom.*;
-        import org.xml.sax.SAXException;
-        import td.domain.WordDocument;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+import td.domain.WordDocument;
 
 public class XmlFileCreator {
     public void addNewDocument(WordDocument wordDocument) throws TransformerFactoryConfigurationError, DOMException {
