@@ -4,6 +4,7 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -33,12 +34,39 @@ public class TestFile {
             XmlObject xsdDocument = XmlObject.Factory.parse(xsdPath.toFile());
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new ByteArrayInputStream(xsdDocument.toString().getBytes()));
-            NodeList list = document.getChildNodes();
-            Node node = list.item(0);
+//            document.getDocumentElement().normalize();
 
-            if (node.getFirstChild() != null && node.getFirstChild().getNodeType() == Node.TEXT_NODE) {
-                System.out.println(node.getFirstChild().getTextContent());
+            System.out.println(document.getDocumentElement().getNodeName());
+            NodeList nodes = document.getElementsByTagName(document.getDocumentElement().getNodeName());
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                NodeList children = node.getChildNodes();
+                readNode(children);
             }
+
+//            document.getDocumentElement()
+
+            NodeList list = document.getChildNodes();
+
+            Node node = list.item(0);
+//            System.out.println(node.getNodeValue());
+//            System.out.println(node.getTextContent());
+//            System.out.println(node.getAttributes());
+//            System.out.println(node.getNodeType());
+
+//            System.out.println(node.getChildNodes().getLength());
+
+
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                Node node1 = list.item(i);
+                System.out.println(node.getNodeType());
+                System.out.println(node.getNodeName());
+            }
+
+//            if (node.getFirstChild() != null && node.getFirstChild().getNodeType() == Node.TEXT_NODE) {
+//                System.out.println(node.getFirstChild().getTextContent());
+//            }
         } catch (XmlException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -47,6 +75,38 @@ public class TestFile {
             e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void readNode(NodeList children){
+        for (int j = 0; j < children.getLength(); j++){
+
+            Node el = children.item(j);
+
+            String currentElement = "";
+            if (el.getNodeName().equals("xs:element")) {
+                currentElement = el.getAttributes().toString();
+            }
+
+            if (el.getNodeType() == Node.ELEMENT_NODE) {
+                String value = "";
+                if (el.hasChildNodes()) {
+                    if (el.getChildNodes().getLength() > 1){
+                        readNode(el.getChildNodes());
+                    }
+                    else{
+                        value = el.getFirstChild().getNodeValue();
+                    }
+                }
+                else{
+                    value = el.getNodeValue();
+                }
+//                System.out.println(el.getNodeName() + ": " + value );
+            }
+
+            if (el.getNodeName().equals("xs:appinfo")) {
+                System.out.println(currentElement + " -- " + el.getTextContent());
+            }
         }
     }
 

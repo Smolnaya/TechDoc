@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mc="http://textanalysis.ru" elementFormDefault="qualified">
+    <xs:attribute name="ruleTag" type="xs:string" default=""/>
 <xs:annotation>
     <xs:appinfo>
         schema appinfo
     </xs:appinfo>
 </xs:annotation>
 
-    <xs:element name="section">
+    <xs:element name="section" mc:ruleTag="true">
         <xs:annotation>
             <xs:appinfo>
                 section appinfo
@@ -23,17 +24,46 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="document">
+    <xs:element name="document" mc:checkAbbr="vvedenie">
         <xs:annotation>
             <xs:appinfo>
-                document appinfo
+                document: checkAbbr=true
+                vvedenie: title=Введение; titleStrong=true; sentenceCount=4
+                conclusion: title=Заключение; titleStrong=true; sentenceCount=4
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
 
+<!--                Doc-->
+<!--                [0] - Введение-->
+<!--                [1] = Глава 1-->
+<!--                [2] = Глава 2-->
+<!--                [3] = Глава 3-->
+<!--                [4] = Заключение-->
+<!--                [5] = Литература-->
+<!--                [6] = Приложение 1-->
+
+<!--                List    -->
+<!--                [0] = vvedenie-->
+<!--                [1] = list:glava-->
+<!--                [2] = conclusion-->
+<!--                [3] = literature-->
+<!--                -->
+
+
+<!--                Document-->
+<!--                Сами правила Map<String, Map<String, String>> ruleMap-->
+<!--
+
+    currentMap.put("title","Введение");
+    currentMap.put("titleStrong","true");
+    currentMap.put("sentenceCount","4");
+    ruleMap.put(vvedenie, currentMap);
+-->
+
                 <!--ВВЕДЕНИЕ-->
-                <xs:element ref="section">
+                <xs:element ref="section" mc:checkAbbr="vvedenie">
                     <xs:annotation>
                         <xs:documentation>
                             Правила введения
@@ -46,7 +76,6 @@
                         <xs:attribute name="level" fixed="1"/>
                     </xs:complexType>
                 </xs:element>
-
 
                 <!--ГЛАВЫ-->
                 <xs:element ref="section" maxOccurs="10">
@@ -80,6 +109,7 @@
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
+<!--                                        <xs:element ref="section" mc:checkAbbr="vyvody">-->
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -120,7 +150,6 @@
 
             </xs:sequence>
             <xs:attribute name="level" fixed="0"/>
-            <xs:attribute name="checkAbbr" use="optional" type="xs:boolean"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>
