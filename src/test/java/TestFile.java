@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.NodeSet;
 import org.apache.xmlbeans.SchemaAnnotation;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.XmlException;
@@ -6,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import td.domain.WordDocument;
 import td.services.Service;
@@ -15,8 +17,12 @@ import td.services.XmlFileCreator;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,19 +39,28 @@ public class TestFile {
             XmlObject xsdDocument = XmlObject.Factory.parse(xsdPath.toFile());
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new ByteArrayInputStream(xsdDocument.toString().getBytes()));
-            NodeList list = document.getChildNodes();
-            Node node = list.item(0);
+            NodeList temp = document.getChildNodes().item(0).getChildNodes();
+            //Get DOM
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document xml = db.parse(new ByteArrayInputStream(xsdDocument.toString().getBytes()));
 
-            if (node.getFirstChild() != null && node.getFirstChild().getNodeType() == Node.TEXT_NODE) {
-                System.out.println(node.getFirstChild().getTextContent());
+            //Get XPath
+            XPathFactory xpf = XPathFactory.newInstance();
+            XPath xpath = xpf.newXPath();
+
+            String allRules = (String) xpath.evaluate(".//element[@name='document']/annotation/appinfo/text()", xml, XPathConstants.STRING);
+            System.out.println(allRules);
+            //todo: заполнить map правил Map<String, Map<String, String>>
+
+
+            NodeList nodes = (NodeList) xpath.evaluate(".//element[@name='document']//sequence/element/@ourRule", xml, XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                System.out.println(i + " " + nodes.item(i).getNodeValue());
             }
-        } catch (XmlException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+            //todo: заполнить лист
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
