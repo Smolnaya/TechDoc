@@ -16,9 +16,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service {
+public class WordDocumentCreator {
 
-    public WordDocument checkHeadersLevel(Path path) throws Exception {
+    public WordDocument createNewDocument(Path path) throws Exception {
         try {
             XWPFDocument document = new XWPFDocument(Files.newInputStream(path));
             List<XWPFParagraph> paragraphs = document.getParagraphs();

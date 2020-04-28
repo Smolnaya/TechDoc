@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 import td.domain.WordDocument;
 
 public class XmlFileCreator {
-    public void addNewDocument(WordDocument wordDocument) throws TransformerFactoryConfigurationError, DOMException {
+    public void createNewXml(WordDocument wordDocument) throws TransformerFactoryConfigurationError, DOMException {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document xmlDocument = documentBuilder.parse("src/main/java/td/xml/structure.xml");
