@@ -73,10 +73,23 @@ public class XmlRulesGetter {
             XPathFactory xpf = XPathFactory.newInstance();
             XPath xpath = xpf.newXPath();
 
+            int chapterQuantity = 0;
+            NodeList quantityList = (NodeList) xpath.evaluate(".//element[@kind='chapter']/@minOccurs", xml, XPathConstants.NODESET);
+            if (quantityList.item(0) != null) {
+                chapterQuantity = Integer.parseInt(quantityList.item(0).getNodeValue());
+            }
+
+//            System.out.println("chapterQuantity: " + chapterQuantity);
+
             List<String> sectionKindList = new ArrayList<>();
             NodeList nodes = (NodeList) xpath.evaluate(".//element[@ref='section']/@kind", xml, XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
-                sectionKindList.add(nodes.item(i).getNodeValue());
+                if (nodes.item(i).getNodeValue().equals("chapter")) {
+                    for (int j = 0; j < chapterQuantity; j++) {
+                        sectionKindList.add(nodes.item(i).getNodeValue());
+                    }
+                } else
+                    sectionKindList.add(nodes.item(i).getNodeValue());
             }
 
             return sectionKindList;

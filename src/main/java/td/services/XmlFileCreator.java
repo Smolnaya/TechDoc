@@ -99,7 +99,7 @@ public class XmlFileCreator {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
-            FileOutputStream fos = new FileOutputStream("src/main/java/td/xml/newstructure.xml");
+            FileOutputStream fos = new FileOutputStream("src/main/java/td/xml/generatedXml.xml");
             StreamResult result = new StreamResult(fos);
             tr.setOutputProperty(OutputKeys.INDENT, "yes");
             tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
