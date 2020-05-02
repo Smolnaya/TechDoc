@@ -56,7 +56,9 @@ public class WordDocumentCreator {
                                 heading.setParentHeader(currentParentHeader);
                                 currentParentHeader.getSubheadersList().add(heading);
                             }
-                            doc.getSections().add(heading);
+                            if(currentLvl == 1) {
+                                doc.getSections().add(heading);
+                            }
                             currentHeader = heading;
                         } else if (currentHeader != null) {
                             doc.getSections().get(doc.getSections().size() - 1).getContent().add(paragraphs.get(i).getText());

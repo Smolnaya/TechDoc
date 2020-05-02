@@ -5,7 +5,7 @@
 
     <xs:simpleType name="levelType">
         <xs:restriction base="xs:int">
-            <xs:minExclusive value="0"/>
+            <xs:minExclusive value="-1"/>
             <xs:maxExclusive value="5"/>
         </xs:restriction>
     </xs:simpleType>
@@ -25,9 +25,9 @@
         <xs:annotation>
             <xs:appinfo>
                 document rules: checkAbbr=true;
-                intro rules: title=введение, level=1, sectionQuantity=0;
-                conclusion rules: title=заключение, level=1, sectionQuantity=0;
-                literature rules: title=список использованных источников, level=1, sectionQuantity=0
+                intro rules: title=ВВЕДЕНИЕ, level=1, sectionQuantity=0;
+                conclusion rules: title=ЗАКЛЮЧЕНИЕ, level=1, sectionQuantity=0;
+                literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, level=1, sectionQuantity=0
             </xs:appinfo>
         </xs:annotation>
 
@@ -38,7 +38,7 @@
                 <xs:element ref="section" mc:kind="intro"/>
 
                 <!--ГЛАВЫ-->
-                <xs:element ref="section" mc:kind="list:chapter" minOccurs="1" maxOccurs="10"/>
+                <xs:element ref="section" mc:kind="chapter" minOccurs="3" maxOccurs="3"/>
 
                 <!--ЗАКЛЮЧЕНИЕ-->
                 <xs:element ref="section" mc:kind="conclusion"/>
@@ -47,6 +47,7 @@
                 <xs:element ref="section" mc:kind="literature"/>
 
             </xs:sequence>
+            <xs:attribute name="level" type="levelType"/>
         </xs:complexType>
 
     </xs:element>

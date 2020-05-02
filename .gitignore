@@ -2,4 +2,4 @@
 *.iml
 target
 log
-src/main/java/td/xml/newstructure.xml
+src/main/java/td/xml/generatedXml.xml
