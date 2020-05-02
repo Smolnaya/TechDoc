@@ -18,7 +18,7 @@ public class TestFile {
     private Validator validator = new Validator();
     private XmlFileCreator createXML = new XmlFileCreator();
     private Logger log = Logger.getLogger(getClass().getName());
-    private Path docPath = Paths.get("src/test/doc/test.docx");
+    private Path docPath = Paths.get("src/test/doc/gqw.docx");
     private static final String XML_FILE = "src/main/java/td/xml/generatedXml.xml";
     private static final String SCHEMA_FILE = "src/main/java/td/xml/schema.xsd";
 
@@ -58,7 +58,7 @@ public class TestFile {
     public void firstValidate() {
         try {
             WordDocument document = wordDocumentCreator.createNewDocument(docPath);
-            createXML.createNewXml(document);
+            createXML.createNewXmlTree(document);
             log.log(Level.INFO, "firstValidate = true");
         } catch (Exception e) {
             log.log(Level.WARNING, e.getMessage());
