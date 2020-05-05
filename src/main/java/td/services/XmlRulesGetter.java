@@ -79,8 +79,6 @@ public class XmlRulesGetter {
                 chapterQuantity = Integer.parseInt(quantityList.item(0).getNodeValue());
             }
 
-//            System.out.println("chapterQuantity: " + chapterQuantity);
-
             List<String> sectionKindList = new ArrayList<>();
             NodeList nodes = (NodeList) xpath.evaluate(".//element[@ref='section']/@kind", xml, XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {

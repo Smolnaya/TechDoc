@@ -17,21 +17,39 @@ public class TestFile {
     private WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
     private Validator validator = new Validator();
     private XmlFileCreator createXML = new XmlFileCreator();
+    private DocumentValidator documentValidator = new DocumentValidator();
     private Logger log = Logger.getLogger(getClass().getName());
+
     private Path docPath = Paths.get("src/test/doc/gqw.docx");
     private static final String XML_FILE = "src/main/java/td/xml/generatedXml.xml";
     private static final String SCHEMA_FILE = "src/main/java/td/xml/schema.xsd";
 
     @Test
+    public void tryAbbr() {
+        try {
+            Boolean errors = AbbreviationValidator.validAbbreviations(docPath.toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void validate() {
-        validator.validate(docPath);
+        List<String> report = validator.validate("Дипломная работа", docPath);
+        for (String s : report) {
+            System.out.println(s);
+        }
     }
 
     //Третья проверка: соответствие созданного WordDocument правилам из схемы
     @Test
     public void thirdValidate() {
-        DocumentValidator documentValidator = new DocumentValidator();
-        List<String> errors = documentValidator.validate(docPath, Paths.get(SCHEMA_FILE));
+        List<String> errors = null;
+        try {
+            errors = documentValidator.validate(wordDocumentCreator.createNewDocument(docPath), Paths.get(SCHEMA_FILE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (errors.isEmpty()) {
             System.out.println("Good document");
         } else {
