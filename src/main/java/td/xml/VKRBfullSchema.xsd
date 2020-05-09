@@ -15,7 +15,7 @@
             <xs:sequence>
                 <xs:element name="title"    type="xs:string"/>
                 <xs:element name="content"  type="xs:string" minOccurs="0"/>
-                <xs:element ref="section"   minOccurs="0" maxOccurs="10"/>
+                <xs:element ref="section"   minOccurs="0" maxOccurs="15"/>
             </xs:sequence>
             <xs:attribute name="level" type="levelType" use="required"/>
         </xs:complexType>
@@ -24,10 +24,11 @@
     <xs:element name="document" mc:kind="document">
         <xs:annotation>
             <xs:appinfo>
-                document rules: checkAbbr=true;
-                intro rules: title=ВВЕДЕНИЕ, level=1, sectionQuantity=0;
-                conclusion rules: title=ЗАКЛЮЧЕНИЕ, level=1, sectionQuantity=0;
-                literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, level=1, sectionQuantity=0
+                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0;
+                conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0;
+                literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
+                chapter rules: titleContains=ГЛАВА, keySensitive=true, lastSubsectionTitle=Выводы, minSubsectionQuantity=3;
+                listOfTermsAndAbbreviations rules: title=СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ, valid=true;
             </xs:appinfo>
         </xs:annotation>
 
@@ -43,8 +44,14 @@
                 <!--ЗАКЛЮЧЕНИЕ-->
                 <xs:element ref="section" mc:kind="conclusion"/>
 
+                <!--СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ-->
+                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations"/>
+
                 <!--СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ-->
                 <xs:element ref="section" mc:kind="literature"/>
+
+                <!--ПРИЛОЖЕНИЯ-->
+                <xs:element ref="section" mc:kind="appendices" minOccurs="0" maxOccurs="10"/>
 
             </xs:sequence>
             <xs:attribute name="level" type="levelType"/>

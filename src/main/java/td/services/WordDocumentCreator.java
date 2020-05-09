@@ -1,10 +1,7 @@
 package td.services;
 
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFStyle;
-import org.apache.poi.xwpf.usermodel.XWPFStyles;
+import org.apache.poi.xwpf.usermodel.*;
 import td.domain.WordDocument;
 import td.domain.Section;
 import td.exceptions.LackOfHeadingsException;
@@ -22,6 +19,7 @@ public class WordDocumentCreator {
         try {
             XWPFDocument document = new XWPFDocument(Files.newInputStream(path));
             List<XWPFParagraph> paragraphs = document.getParagraphs();
+            List<XWPFTable> table = document.getTables();
             XWPFStyles styles = document.getStyles();
             WordDocument doc = new WordDocument();
             doc.setTitle(path.getFileName().toString());
@@ -56,12 +54,12 @@ public class WordDocumentCreator {
                                 heading.setParentHeader(currentParentHeader);
                                 currentParentHeader.getSubheadersList().add(heading);
                             }
-                            if(currentLvl == 1) {
+                            if (currentLvl == 1) {
                                 doc.getSections().add(heading);
                             }
                             currentHeader = heading;
-                        } else if (currentHeader != null) {
-                            doc.getSections().get(doc.getSections().size() - 1).getContent().add(paragraphs.get(i).getText());
+                        } else if (currentHeader != null && !paragraphs.get(i).getText().equals("")) {
+                            currentHeader.getContent().add((paragraphs.get(i).getText()));
                         }
                     }
                 }

@@ -74,18 +74,26 @@ public class XmlRulesGetter {
             XPath xpath = xpf.newXPath();
 
             int chapterQuantity = 0;
-            NodeList quantityList = (NodeList) xpath.evaluate(".//element[@kind='chapter']/@minOccurs", xml, XPathConstants.NODESET);
-            if (quantityList.item(0) != null) {
-                chapterQuantity = Integer.parseInt(quantityList.item(0).getNodeValue());
+            NodeList chapterQuantityList = (NodeList) xpath.evaluate(".//element[@kind='chapter']/@minOccurs", xml, XPathConstants.NODESET);
+            if (chapterQuantityList.item(0) != null) {
+                chapterQuantity = Integer.parseInt(chapterQuantityList.item(0).getNodeValue());
             }
 
-//            System.out.println("chapterQuantity: " + chapterQuantity);
+            int appendicesQuantity = 0;
+            NodeList appendicesQuantityList = (NodeList) xpath.evaluate(".//element[@kind='appendices']/@maxOccurs", xml, XPathConstants.NODESET);
+            if (appendicesQuantityList.item(0) != null) {
+                appendicesQuantity = Integer.parseInt(appendicesQuantityList.item(0).getNodeValue());
+            }
 
             List<String> sectionKindList = new ArrayList<>();
             NodeList nodes = (NodeList) xpath.evaluate(".//element[@ref='section']/@kind", xml, XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
                 if (nodes.item(i).getNodeValue().equals("chapter")) {
                     for (int j = 0; j < chapterQuantity; j++) {
+                        sectionKindList.add(nodes.item(i).getNodeValue());
+                    }
+                } else if (nodes.item(i).getNodeValue().equals("appendices")) {
+                    for (int j = 0; j < appendicesQuantity; j++) {
                         sectionKindList.add(nodes.item(i).getNodeValue());
                     }
                 } else
