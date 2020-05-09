@@ -91,7 +91,8 @@ public class DocumentValidator {
                                         }
                                         List<Term> termList = AbbreviationValidator.getTermList(document.getSections().get(i));
                                         Set<String> abbreviationInText = AbbreviationValidator.getAbbrInText(sections);
-                                        for (Iterator<String> iterator = abbreviationInText.iterator(); iterator.hasNext(); ) {
+                                        Iterator<String> iterator = abbreviationInText.iterator();
+                                        while (iterator.hasNext()) {
                                             for (int j = 0; j < termList.size(); j++) {
                                                 String str = iterator.next();
                                                 if ((str.equals(termList.get(j).getTerm()))) {
