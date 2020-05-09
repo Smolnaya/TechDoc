@@ -7,7 +7,6 @@ import td.services.WordDocumentCreator;
 import td.services.XmlFileCreator;
 import td.services.XmlValidator;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,21 +18,24 @@ import java.util.logging.Logger;
 public class Validator {
     private Logger log = Logger.getLogger(getClass().getName());
     private WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
-    private XmlFileCreator createXML = new XmlFileCreator();
+    private XmlFileCreator xmlCreator = new XmlFileCreator();
     private static final String XML_FILE = "src/main/java/td/xml/generatedXml.xml";
-    private static final String SCHEMA_FILE = "src/main/java/td/xml/schema.xsd";
+    private static final String VKRB_SCHEMA = "src/main/java/td/xml/VKRBschema.xsd";
+    private static final String FULL_VKRB_SCHEMA = "src/main/java/td/xml/VKRBfullSchema.xsd";
 
     private List<String> report = new ArrayList<>();
 
-    public List<String> validate(String docType, Path docPath) {
+    public List<String> validate(String docType, Path docPath, Boolean isValidateAbbreviation) {
         String schema = "";
         if (docType.equals("Дипломная работа")) {
-            schema = SCHEMA_FILE;
+            schema = VKRB_SCHEMA;
+        } else if (docType.equals("ВКРБ")) {
+            schema = FULL_VKRB_SCHEMA;
         }
-        WordDocument document = firstValidate(docPath);
+        WordDocument document = validateDocModel(docPath);
         if (!document.getSections().isEmpty()) {
-            if (secondValidate(schema)) {
-                if (thirdValidate(Paths.get(schema), document)) {
+            if (validateXml(schema)) {
+                if (validateRules(Paths.get(schema), document, isValidateAbbreviation)) {
                     log.log(Level.INFO, "Validation - true!");
                     return report;
                 } else return report;
@@ -41,10 +43,10 @@ public class Validator {
         } else return report;
     }
 
-    public WordDocument firstValidate(Path docPath) {
+    private WordDocument validateDocModel(Path docPath) {
         try {
             WordDocument document = wordDocumentCreator.createNewDocument(docPath);
-            createXML.createNewXmlTree(document);
+            xmlCreator.createNewXmlTree(document);
             log.log(Level.INFO, "First validation - true");
             report.add("Модель документа успешно собрана.");
             return document;
@@ -55,7 +57,7 @@ public class Validator {
         }
     }
 
-    public Boolean secondValidate(String schema) {
+    private Boolean validateXml(String schema) {
         XmlValidator XMLValidator = new XmlValidator();
         try {
             boolean valid = XMLValidator.validate(XML_FILE, schema);
@@ -69,9 +71,9 @@ public class Validator {
         }
     }
 
-    public Boolean thirdValidate(Path schema, WordDocument document) {
+    public Boolean validateRules(Path schema, WordDocument document, Boolean isValidateAbbreviation) {
         DocumentValidator documentValidator = new DocumentValidator();
-        List<String> errors = documentValidator.validate(document, schema);
+        List<String> errors = documentValidator.validate(document, schema, isValidateAbbreviation);
         if (errors.isEmpty()) {
             log.log(Level.INFO, "Third validation - true");
             report.add("Документ соответствует требованиям.");

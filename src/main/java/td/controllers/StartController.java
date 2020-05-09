@@ -36,7 +36,7 @@ public class StartController extends Window {
     @FXML
     private CheckBox abbreviationCheckBox;
 
-    private ObservableList<String> documentTypeList = FXCollections.observableArrayList("Дипломная работа");
+    private ObservableList<String> documentTypeList = FXCollections.observableArrayList("Дипломная работа", "ВКРБ");
     private File docFile;
 
     private Logger log = Logger.getLogger(getClass().getName());
@@ -65,7 +65,7 @@ public class StartController extends Window {
     @FXML
     void clickValidateButton(ActionEvent event) {
         Validator validator = new Validator();
-        List<String> report = validator.validate(documentTypeChoiceBox.getValue(),docFile.toPath());
+        List<String> report = validator.validate(documentTypeChoiceBox.getValue(), docFile.toPath(), abbreviationCheckBox.isSelected());
         for (int i = 0; i < report.size(); i++) {
             reportTextArea.appendText(report.get(i) + "\n");
         }

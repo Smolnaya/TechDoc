@@ -6,6 +6,8 @@ import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
 import ru.textanalysis.tawt.ms.storage.OmoFormList;
 import ru.textanalysis.tfwwt.parser.string.Parser;
 import td.domain.AbbreviationAndText;
+import td.domain.Section;
+import td.domain.Term;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +39,16 @@ public class AbbreviationValidator {
             System.out.println("Morf: " + validateMorf);
             return !validateGr.isEmpty() && !validateMorf.isEmpty();
         }
+    }
+
+    public static List<Term> getTermList(Section document) {
+        List<String> contentList = document.getContent();
+        List<Term> termList = new ArrayList<>();
+        for (int i = 0; i < contentList.size(); i++) {
+            String[] term = contentList.get(i).trim().split(" – ");
+            termList.add(new Term(term[0], term[1]));
+        }
+        return termList;
     }
 
     private static List<AbbreviationAndText> getAbbreviations(ListIterator<IBodyElement> iterator) {
@@ -77,7 +89,6 @@ public class AbbreviationValidator {
         return paragraphs;
     }
 
-
     private static List<XWPFParagraph> getAbbreviationInText(ListIterator<XWPFParagraph> iterator) {
         List<XWPFParagraph> list = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -88,6 +99,41 @@ public class AbbreviationValidator {
 
     private static boolean isStyleBy(XWPFStyles styles, XWPFParagraph prg) {
         return prg.getStyleID() != null && styles.getStyle(prg.getStyleID()).getName().equals("heading 1");
+    }
+
+    public static Set<String> getAbbrInText(List<Section> sections) {
+        List<String> content = new ArrayList<>();
+        for (int i = 0; i < sections.size(); i++) {
+            List<String> text = getContent(sections.get(i));
+            content.addAll(text);
+        }
+
+        Set<String> abbreviationInText = new HashSet<>();
+        for (int i = 0; i < content.size(); i++) {
+            String[] word = content.get(i).trim().split(" ");
+            for (int j = 0; j < word.length; j++) {
+                Pattern pattern = Pattern.compile("([А-ЯA-Z]{2,})");
+                Matcher matcher = pattern.matcher(word[j]);
+                while (matcher.find()) {
+                    String string = word[j].replaceAll("[^A-Za-zА-Яа-я]", "");
+                    abbreviationInText.add(string);
+                }
+            }
+        }
+
+        return abbreviationInText;
+    }
+
+    private static List<String> getContent(Section section) {
+        List<String> content = new ArrayList<>(section.getContent());
+
+        if (!section.getSubheadersList().isEmpty()) {
+            for (int i = 0; i < section.getSubheadersList().size(); i++) {
+                List<String> text = getContent(section.getSubheadersList().get(i));
+                content.addAll(text);
+            }
+        }
+        return content;
     }
 
     private static Set<String> validateGr(List<XWPFParagraph> text, List<AbbreviationAndText> abbreviation) {

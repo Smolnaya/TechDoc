@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:mc="http://textanalysis.ru"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="levelType">
+        <xs:restriction base="xs:int">
+            <xs:minExclusive value="-1"/>
+            <xs:maxExclusive value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="section">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="title"    type="xs:string"/>
+                <xs:element name="content"  type="xs:string" minOccurs="0"/>
+                <xs:element ref="section"   minOccurs="0" maxOccurs="15"/>
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="document" mc:kind="document">
+        <xs:annotation>
+            <xs:appinfo>
+                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0;
+                conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0;
+                literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
+                chapter rules: titleContains=ГЛАВА, keySensitive=true, lastSubsectionTitle=Выводы, minSubsectionQuantity=3;
+                listOfTermsAndAbbreviations rules: title=СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ, valid=true;
+            </xs:appinfo>
+        </xs:annotation>
+
+        <xs:complexType>
+            <xs:sequence>
+
+                <!--ВВЕДЕНИЕ-->
+                <xs:element ref="section" mc:kind="intro"/>
+
+                <!--ГЛАВЫ-->
+                <xs:element ref="section" mc:kind="chapter" minOccurs="3" maxOccurs="3"/>
+
+                <!--ЗАКЛЮЧЕНИЕ-->
+                <xs:element ref="section" mc:kind="conclusion"/>
+
+                <!--СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ-->
+                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations"/>
+
+                <!--СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ-->
+                <xs:element ref="section" mc:kind="literature"/>
+
+                <!--ПРИЛОЖЕНИЯ-->
+                <xs:element ref="section" mc:kind="appendices" minOccurs="0" maxOccurs="10"/>
+
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType"/>
+        </xs:complexType>
+
+    </xs:element>
+</xs:schema>
