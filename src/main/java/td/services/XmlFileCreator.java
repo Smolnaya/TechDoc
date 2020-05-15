@@ -18,7 +18,7 @@ public class XmlFileCreator {
     public void createNewXml(WordDocument wordDocument) throws TransformerFactoryConfigurationError, DOMException {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document xmlDocument = documentBuilder.parse("src/main/java/td/xml/structure.xml");
+            Document xmlDocument = documentBuilder.parse("templates/structure.xml");
             Node root = xmlDocument.getDocumentElement();
             int currentLevel = 1;
             Element parentElement = xmlDocument.getDocumentElement();
@@ -99,7 +99,7 @@ public class XmlFileCreator {
     public void createNewXmlTree(WordDocument wordDocument) throws TransformerFactoryConfigurationError, DOMException {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document xmlDocument = documentBuilder.parse("src/main/java/td/xml/structure.xml");
+            Document xmlDocument = documentBuilder.parse("templates/structure.xml");
             Node root = xmlDocument.getDocumentElement();
             for (Section section : wordDocument.getSections()) {
                 root.appendChild(constructSection(section, xmlDocument));
@@ -138,7 +138,7 @@ public class XmlFileCreator {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
-            FileOutputStream fos = new FileOutputStream("src/main/java/td/xml/generatedXml.xml");
+            FileOutputStream fos = new FileOutputStream("templates/generatedXml.xml");
             StreamResult result = new StreamResult(fos);
             tr.setOutputProperty(OutputKeys.INDENT, "yes");
             tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
