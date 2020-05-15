@@ -148,7 +148,7 @@ public class RulesValidator {
                         }
                     }
 
-                    float value = (float) 100 * xsdKeyWords.size() / commonWords.size();
+                    float value = (float) 100 * commonWords.size() / xsdKeyWords.size();
                     int commonWordsPercentage = round(value);
                     errors.add("Совпадений по ключевым словам: " + commonWordsPercentage + "%");
                     if (isGetKw) {
