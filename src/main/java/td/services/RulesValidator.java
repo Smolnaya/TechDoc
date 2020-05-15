@@ -9,9 +9,14 @@ import td.domain.WordDocument;
 import java.nio.file.Path;
 import java.util.*;
 
+import static java.lang.Math.round;
+
 public class RulesValidator {
     private List<Section> generalRulesSections;
     private List<String> sectionKindList;
+    private List<String> documentKeyWords;
+    private List<String> xsdKeyWords;
+    private HashSet<String> commonWords;
     private WordDocument document;
 
     public RulesValidator(WordDocument document, Path schema) {
@@ -19,6 +24,9 @@ public class RulesValidator {
         this.generalRulesSections = new ArrayList<>();
         this.document = document;
         this.sectionKindList = xmlRules.getSectionKind(schema);
+        this.documentKeyWords = new ArrayList<>();
+        this.xsdKeyWords = new ArrayList<>();
+        this.commonWords = new HashSet<>();
     }
 
     public List<String> validateRules(Map<String, Map<String, String>> userSectionRules,
@@ -115,7 +123,7 @@ public class RulesValidator {
 
     public List<String> validateGeneralRules(Map<String, String> userGeneralRules) {
         List<String> errors = new ArrayList<>();
-        List<String> kwList = new ArrayList<>();
+        boolean isGetKw = false;
 
         for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
 
@@ -129,39 +137,54 @@ public class RulesValidator {
             //проверка ключевых слов
             if (entry.getKey().equals("validateKeyWords")) {
                 if (Boolean.parseBoolean(entry.getValue())) {
-                    for (int i = 0; i < generalRulesSections.size(); i++) {
-                        String content = getSectionContent(generalRulesSections.get(i));
-                        if (!content.trim().isEmpty()) {
-                            List<Word> keyWords = getKeyWords(content);
-                            System.out.println("Section: " + generalRulesSections.get(i).getTitle());
-                            for (int j = 0; j < keyWords.size(); j++) {
-                                System.out.println(keyWords.get(j));
+                    getDocumentKeyWords();
+
+                    //поиск общий слов
+                    for (String xsdWord : xsdKeyWords) {
+                        for (String documentWord : documentKeyWords) {
+                            if (xsdWord.equals(documentWord)) {
+                                commonWords.add(xsdWord);
                             }
                         }
+                    }
+
+                    float value = (float) 100 * xsdKeyWords.size() / commonWords.size();
+                    int commonWordsPercentage = round(value);
+                    errors.add("Совпадений по ключевым словам: " + commonWordsPercentage + "%");
+                    if (isGetKw) {
+                        errors.add("Общие ключевые слова: ");
+                        errors.addAll(commonWords);
                     }
                 }
             }
 
-            //поиск ключевых слов
+            //поиск ключевых слов в шаблоне
+            if (entry.getKey().equals("keyWords")) {
+                String words[] = entry.getValue().split(" ");
+                xsdKeyWords.addAll(Arrays.asList(words));
+            }
+
+            //поиск ключевых слов в документе
             if (entry.getKey().equals("getKeyWords")) {
                 if (Boolean.parseBoolean(entry.getValue())) {
-                    kwList.add("Ключевые слова:");
-                    for (int i = 0; i < generalRulesSections.size(); i++) {
-                        String content = getSectionContent(generalRulesSections.get(i));
-                        if (!content.trim().isEmpty()) {
-                            List<Word> keyWords = getKeyWords(content);
-                            kwList.add(generalRulesSections.get(i).getTitle());
-                            for (int j = 0; j < keyWords.size(); j++) {
-                                kwList.add(keyWords.get(j).getWord());
-                            }
-                        }
-                    }
-                    errors.addAll(kwList);
+                    isGetKw = Boolean.parseBoolean(entry.getValue());
                 }
             }
         }
 
         return errors;
+    }
+
+    private void getDocumentKeyWords() {
+        for (int i = 0; i < generalRulesSections.size(); i++) {
+            String content = getSectionContent(generalRulesSections.get(i));
+            if (!content.trim().isEmpty()) {
+                List<Word> keyWords = getKeyWords(content);
+                for (int j = 0; j < keyWords.size(); j++) {
+                    documentKeyWords.add(keyWords.get(j).getWord());
+                }
+            }
+        }
     }
 
     private String validateAbbreviation(WordDocument document) {

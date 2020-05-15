@@ -24,7 +24,7 @@
     <xs:element name="document" mc:kind="document">
         <xs:annotation>
             <xs:appinfo>
-                document rules: validateAbbreviation=false, validateKeyWords=true, getKeyWords=true;
+                document rules: validateAbbreviation=false, validateKeyWords=true, getKeyWords=true, keyWords=задача документация технический правило;
                 intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true;
                 conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true;
                 literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
