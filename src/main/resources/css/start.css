@@ -1,0 +1,53 @@
+#anchorPane {
+    -fx-background-color: #e7f5dc;
+}
+
+.choice-box {
+    -fx-background-color: linear-gradient(to top, #64ac8f, #94d6ba);
+    -fx-mark-color: #64ac8f;
+    -fx-background-radius: 30px;
+}
+
+.choice-box .context-menu {
+    -fx-background-color: #94d6ba;
+    -fx-background-radius: 10px;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #64ac8f;
+    -fx-background-radius: 30px;
+}
+
+.choice-box .menu-item > .label {
+    -fx-pref-width: 270;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to top, #64ac8f, #94d6ba);
+    -fx-background-radius: 30px;
+}
+
+.text-field {
+    -fx-background-radius: 30px;
+}
+
+.text-area *.text {
+    -fx-text-alignment: center;
+}
+
+.text-area {
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
