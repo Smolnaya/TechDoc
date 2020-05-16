@@ -32,7 +32,7 @@
 }
 
 .text-area *.text {
-    -fx-text-alignment: center;
+    -fx-text-alignment: left;
 }
 
 .text-area {
