@@ -51,3 +51,57 @@
 .text-area .scroll-pane .content {
     -fx-background-color: transparent;
 }
+
+.scroll-bar:horizontal, .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.increment-button, .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 5em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: linear-gradient(to top, #64ac8f, #94d6ba);
+    -fx-background-radius: 5em;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-radius: 15px;
+}
+
+#rulesScrollPane {
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+}
+
+#container {
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+}
+
+.check-box .box {
+    -fx-background-color: #e7f5dc;
+    -fx-border-color: #64ac8f;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #94d6ba;
+}
