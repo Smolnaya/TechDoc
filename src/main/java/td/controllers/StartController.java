@@ -16,6 +16,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import td.Validator;
+import td.services.Translator;
 import td.services.XmlRulesGetter;
 
 import java.io.*;
@@ -60,6 +61,7 @@ public class StartController extends Window {
     private Map<String, String> userGeneralRules = new HashMap<>();
     private XmlRulesGetter rulesGetter = new XmlRulesGetter();
     private Logger log = Logger.getLogger(getClass().getName());
+    private Translator translator = new Translator();
 
     Font ruleFont = Font.font("Times New Roman", 15);
     Font keyFont = Font.font("Times New Roman", FontWeight.BOLD, 14);
@@ -99,7 +101,7 @@ public class StartController extends Window {
     }
 
     @FXML
-    void chooseSchema() {
+    public void chooseSchema() {
         container.getChildren().clear();
         Path xsdPath = null;
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
@@ -107,9 +109,11 @@ public class StartController extends Window {
                 xsdPath = Paths.get(entry.getValue());
             }
         }
-        Map<String, Map<String, String>> xmlSectionRules = rulesGetter.getDocumentRules(xsdPath);
-        Map<String, String> xmlGeneralRules = rulesGetter.getGeneralRules(xsdPath);
-        genRulesLabel.setFont(keyFont);
+
+        Map<String, Map<String, String>> xmlSectionRules =
+                translator.translateSectionRulesToRussian(rulesGetter.getDocumentRules(xsdPath));
+        Map<String, String> xmlGeneralRules =
+                translator.translateGeneralToRussian(rulesGetter.getGeneralRules(xsdPath));
 
         for (Map.Entry<String, Map<String, String>> entry : xmlSectionRules.entrySet()) {
             Label key = new Label();
@@ -118,10 +122,6 @@ public class StartController extends Window {
             container.getChildren().add(key);
             Map<String, String> valueMap = entry.getValue();
             for (Map.Entry<String, String> stringEntry : valueMap.entrySet()) {
-//                Label rule = new Label();
-//                rule.setFont(ruleFont);
-//                rule.setText(stringEntry.getKey());
-//                container.getChildren().add(rule);
                 String rule = stringEntry.getKey();
                 String value = stringEntry.getValue();
                 if (value.equals("true") || value.equals("false")) {
@@ -143,7 +143,6 @@ public class StartController extends Window {
                     });
                     textField.setText(value);
                     container.getChildren().addAll(label, textField);
-//                    container.getChildren().add(textField);
                 } else {
                     Label label = new Label(rule);
                     label.setFont(ruleFont);
@@ -154,12 +153,9 @@ public class StartController extends Window {
             }
         }
 
+        genRulesLabel.setFont(keyFont);
         container.getChildren().add(genRulesLabel);
         for (Map.Entry<String, String> entry : xmlGeneralRules.entrySet()) {
-//            Label rule = new Label();
-//            rule.setFont(ruleFont);
-//            rule.setText(entry.getKey());
-//            container.getChildren().add(rule);
             String rule = entry.getKey();
             String value = entry.getValue();
             if (value.equals("true") || value.equals("false")) {
@@ -236,6 +232,14 @@ public class StartController extends Window {
                 }
             }
         }
+        userSectionRules = translator.translateSectionRulesToEnglish(userSectionRules);
+        userGeneralRules = translator.translateGeneralToEnglish(userGeneralRules);
+//        for (Map.Entry<String, Map<String, String>> entry : userSectionRules.entrySet()) {
+//            System.out.println(entry.getKey() + ": " + entry.getValue());
+//        }
+//        for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
+//            System.out.println(entry.getKey() + ": " + entry.getValue());
+//        }
     }
 
     @FXML

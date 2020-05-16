@@ -2,10 +2,7 @@ package td;
 
 import org.xml.sax.SAXException;
 import td.domain.WordDocument;
-import td.services.RulesValidator;
-import td.services.WordDocumentCreator;
-import td.services.XmlFileCreator;
-import td.services.XmlValidator;
+import td.services.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -50,7 +47,7 @@ public class Validator {
             WordDocument document = wordDocumentCreator.createNewDocument(docPath);
             xmlCreator.createNewXmlTree(document);
             log.log(Level.INFO, "First validation - true");
-            report.add("Модель документа успешно собрана.");
+            report.add("Структура документа верна.");
             return document;
         } catch (Exception e) {
             log.log(Level.WARNING, e.getMessage());
@@ -64,18 +61,18 @@ public class Validator {
         try {
             boolean valid = XMLValidator.validate(XML_FILE, schema);
             log.log(Level.INFO, "Second validation - " + valid);
-            report.add("Документ соотвествует схеме.");
+            report.add("\nДокумент соотвествует шаблону.");
             return valid;
         } catch (SAXException | IOException e) {
             log.log(Level.WARNING, "Wrong structure.\n" + e.getMessage());
-            report.add("Документ не соотвествует схеме." + e.getMessage());
+            report.add("\nДокумент не соотвествует шаблону." + e.getMessage());
             return false;
         }
     }
 
     public Boolean validateRules(Path schema, WordDocument document, Map<String, String> userGeneralRules,
                                  Map<String, Map<String, String>> userSectionRules) {
-        RulesValidator rulesValidator = new RulesValidator(document, schema);
+        RulesValidator rulesValidator = new RulesValidator(document, schema, userGeneralRules);
         List<String> errors = rulesValidator.validateRules(userSectionRules, userGeneralRules);
         if (errors.isEmpty()) {
             log.log(Level.INFO, "Third validation - true");

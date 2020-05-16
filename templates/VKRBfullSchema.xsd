@@ -25,7 +25,7 @@
         <xs:annotation>
             <xs:appinfo>
                 document rules: validateAbbreviation=false, validateKeyWords=true, getKeyWords=true, keyWords=задача документация технический правило;
-                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true;
+                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true, words=цели задача;
                 conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true;
                 literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
                 chapter rules: titleContains=ГЛАВА, keySensitive=true, lastSubsectionTitle=Выводы, minSubsectionQuantity=3, generalRules=true;

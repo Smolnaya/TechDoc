@@ -6,9 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
+import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
 
 public class Start extends Application {
     public static void main(String[] args) throws Exception {
+//        JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
         launch(args);
     }
 

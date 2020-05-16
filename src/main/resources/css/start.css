@@ -92,16 +92,16 @@
     -fx-border-radius: 15px;
 }
 
-.check-box .box {
-    -fx-background-color: #e7f5dc;
-    -fx-border-color: #64ac8f;
-    -fx-border-radius: 3px;
-}
+/*.check-box .box {*/
+/*    -fx-background-color: #e7f5dc;*/
+/*    -fx-border-color: #64ac8f;*/
+/*    -fx-border-radius: 3px;*/
+/*}*/
 
-.check-box:selected .mark {
-    -fx-background-color: white;
-}
+/*.check-box:selected .mark {*/
+/*    -fx-background-color: white;*/
+/*}*/
 
-.check-box:selected .box {
-    -fx-background-color: #94d6ba;
-}
+/*.check-box:selected .box {*/
+/*    -fx-background-color: #94d6ba;*/
+/*}*/

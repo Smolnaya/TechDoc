@@ -19,13 +19,14 @@ public class RulesValidator {
     private HashSet<String> commonWords;
     private WordDocument document;
 
-    public RulesValidator(WordDocument document, Path schema) {
+    public RulesValidator(WordDocument document, Path schema,
+                          Map<String, String> userGeneralRules) {
         XmlRulesGetter xmlRules = new XmlRulesGetter();
         this.generalRulesSections = new ArrayList<>();
         this.document = document;
         this.sectionKindList = xmlRules.getSectionKind(schema);
         this.documentKeyWords = new ArrayList<>();
-        this.xsdKeyWords = new ArrayList<>();
+        this.xsdKeyWords = getUserKeyWords(userGeneralRules);
         this.commonWords = new HashSet<>();
     }
 
@@ -50,7 +51,7 @@ public class RulesValidator {
                                 //точное совпадение заголовка
                                 if (stringEntry.getKey().equals("title")) {
                                     if (!document.getSections().get(i).getTitle().trim().equals(stringEntry.getValue())) {
-                                        errors.add("Неверный заголовок: '" + document.getSections().get(i).getTitle().trim()
+                                        errors.add("\nНеверный заголовок: '" + document.getSections().get(i).getTitle().trim()
                                                 + "' ожидалось: '" + stringEntry.getValue() + "'.");
                                     }
                                 }
@@ -58,7 +59,7 @@ public class RulesValidator {
                                 //неточное совпадение заголовка
                                 if (stringEntry.getKey().equals("titleContains")) {
                                     if (!document.getSections().get(i).getTitle().trim().contains(stringEntry.getValue())) {
-                                        errors.add("Неверный заголовок: '" + document.getSections().get(i).getTitle().trim()
+                                        errors.add("\nНеверный заголовок: '" + document.getSections().get(i).getTitle().trim()
                                                 + "' ожидалось, что в заголовке встретится: '" + stringEntry.getValue() + "'.");
                                     }
                                 }
@@ -69,7 +70,7 @@ public class RulesValidator {
                                         int lastSection = document.getSections().get(i).getSubheadersList().size() - 1;
                                         String title = document.getSections().get(i).getSubheadersList().get(lastSection).getTitle().trim();
                                         if (!title.contains(stringEntry.getValue())) {
-                                            errors.add("Неверный послений заголовок раздела: '" + title
+                                            errors.add("\nНеверный послений заголовок раздела: '" + title
                                                     + "' ожидалось, что в заголовке встретится: '" + stringEntry.getValue() + "'.");
                                         }
                                     }
@@ -79,7 +80,7 @@ public class RulesValidator {
                                 if (stringEntry.getKey().equals("subsectionQuantity")) {
                                     if (document.getSections().get(i).getSubheadersList().size() !=
                                             Integer.parseInt(stringEntry.getValue())) {
-                                        errors.add("Неверное количество подзаголовков раздела '" + document.getSections().get(i).getTitle() +
+                                        errors.add("\nНеверное количество подзаголовков раздела '" + document.getSections().get(i).getTitle() +
                                                 "': '" + document.getSections().get(i).getSubheadersList().size() +
                                                 "' ожидалось: '" + stringEntry.getValue() + "'.");
                                     }
@@ -89,7 +90,7 @@ public class RulesValidator {
                                 if (stringEntry.getKey().equals("minSubsectionQuantity")) {
                                     if (document.getSections().get(i).getSubheadersList().size() <
                                             Integer.parseInt(stringEntry.getValue())) {
-                                        errors.add("Количество подразделов раздела '" + document.getSections().get(i).getTitle() +
+                                        errors.add("\nКоличество подразделов раздела '" + document.getSections().get(i).getTitle() +
                                                 "' меньше: '" + document.getSections().get(i).getSubheadersList().size() +
                                                 "' ожидалось как минимум " + stringEntry.getValue() + ".");
                                     }
@@ -99,7 +100,7 @@ public class RulesValidator {
                                 if (stringEntry.getKey().equals("maxSubsectionQuantity")) {
                                     if (document.getSections().get(i).getSubheadersList().size() >
                                             Integer.parseInt(stringEntry.getValue())) {
-                                        errors.add("Количество подразделов раздела '" + document.getSections().get(i).getTitle() +
+                                        errors.add("\nКоличество подразделов раздела '" + document.getSections().get(i).getTitle() +
                                                 "' больше: '" + document.getSections().get(i).getSubheadersList().size() +
                                                 "' ожидалось как максимум " + stringEntry.getValue() + ".");
                                     }
@@ -121,16 +122,27 @@ public class RulesValidator {
         }
     }
 
+    public List<String> getUserKeyWords(Map<String, String> userGeneralRules) {
+        List<String> kw = new ArrayList<>();
+        for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
+            if (entry.getKey().equals("keyWords")) {
+                String words[] = entry.getValue().split(" ");
+                kw.addAll(Arrays.asList(words));
+            }
+        }
+        return kw;
+    }
+
     public List<String> validateGeneralRules(Map<String, String> userGeneralRules) {
         List<String> errors = new ArrayList<>();
         boolean isGetKw = false;
 
         for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
 
-            //проверка аббревиатур
-            if (entry.getKey().equals("validateAbbreviation")) {
+            //поиск ключевых слов в документе
+            if (entry.getKey().equals("getKeyWords")) {
                 if (Boolean.parseBoolean(entry.getValue())) {
-                    errors.add(validateAbbreviation(document));
+                    isGetKw = Boolean.parseBoolean(entry.getValue());
                 }
             }
 
@@ -150,24 +162,19 @@ public class RulesValidator {
 
                     float value = (float) 100 * commonWords.size() / xsdKeyWords.size();
                     int commonWordsPercentage = round(value);
-                    errors.add("Совпадений по ключевым словам: " + commonWordsPercentage + "%");
+                    errors.add("\nСовпадений по ключевым словам: " + commonWordsPercentage + "%");
                     if (isGetKw) {
-                        errors.add("Общие ключевые слова: ");
+                        errors.add("\nОбщие ключевые слова: ");
                         errors.addAll(commonWords);
                     }
                 }
             }
 
-            //поиск ключевых слов в шаблоне
-            if (entry.getKey().equals("keyWords")) {
-                String words[] = entry.getValue().split(" ");
-                xsdKeyWords.addAll(Arrays.asList(words));
-            }
-
-            //поиск ключевых слов в документе
-            if (entry.getKey().equals("getKeyWords")) {
+            //проверка аббревиатур
+            if (entry.getKey().equals("validateAbbreviation")) {
                 if (Boolean.parseBoolean(entry.getValue())) {
-                    isGetKw = Boolean.parseBoolean(entry.getValue());
+                    errors.add("\nПроверка аббревиатур");
+                    errors.addAll(validateAbbreviation(document));
                 }
             }
         }
@@ -187,27 +194,34 @@ public class RulesValidator {
         }
     }
 
-    private String validateAbbreviation(WordDocument document) {
-        String errors = "";
+    private List<String> validateAbbreviation(WordDocument document) {
+        List<String> errors = new ArrayList<>();
         for (int j = 0; j < sectionKindList.size(); j++) {
             if (sectionKindList.get(j).equals("listOfTermsAndAbbreviations")) {
                 List<Term> termList = AbbreviationValidator.getTermList(document.getSections().get(j));
-                Set<String> abbreviationInText = AbbreviationValidator.getAbbrInText(generalRulesSections);
-                Iterator<String> iterator = abbreviationInText.iterator();
-                while (iterator.hasNext()) {
-                    for (int k = 0; k < termList.size(); k++) {
-                        String str = iterator.next();
-                        if ((str.equals(termList.get(k).getTerm()))) {
-                            System.out.println("Найдено совпадение: " + termList.get(k).getTerm());
-                            iterator.remove();
-                            break;
+                if (!termList.isEmpty()) {
+                    Set<String> abbreviationInText = AbbreviationValidator.getAbbrInText(generalRulesSections);
+                    Iterator<String> iterator = abbreviationInText.iterator();
+                    List<String> foundAbbr = new ArrayList<>();
+                    foundAbbr.add("\nНайденные совпадения: ");
+                    while (iterator.hasNext()) {
+                        for (int k = 0; k < termList.size(); k++) {
+                            String str = iterator.next();
+                            if ((str.equals(termList.get(k).getTerm()))) {
+                                foundAbbr.add(termList.get(k).getTerm());
+                                iterator.remove();
+                                break;
+                            }
                         }
                     }
-                }
-                if (!abbreviationInText.isEmpty()) {
-                    errors = "В тексте найдены аббревиатуры, которые не указаны в списке терминов: " +
-                            abbreviationInText;
-                }
+                    if (foundAbbr.size() > 1) {
+                        errors.addAll(foundAbbr);
+                    }
+                    if (!abbreviationInText.isEmpty()) {
+                        errors.add("\nВ тексте найдены аббревиатуры, которые не указаны в списке аббревиатур: " +
+                                abbreviationInText);
+                    }
+                } else errors.add("Список аббревиатур не найден.");
             }
         }
         return errors;

@@ -40,7 +40,7 @@ public class WordDocumentCreator {
                                 currentParentHeader.getSubheadersList().add(heading);
                             } else if (heading.getLevel() > currentLvl) {
                                 if (heading.getLevel() > currentLvl + 1) {
-                                    throw new WrongLevelException("Wrong header level. Cannot continue. Please, correct header levels");
+                                    throw new WrongLevelException("Неверный уровень раздела. Для продолжения необходимо исправить уровни.");
                                 }
                                 heading.setParentHeader(currentHeader);
                                 currentHeader.getSubheadersList().add(heading);
