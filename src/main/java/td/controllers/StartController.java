@@ -118,16 +118,20 @@ public class StartController extends Window {
             container.getChildren().add(key);
             Map<String, String> valueMap = entry.getValue();
             for (Map.Entry<String, String> stringEntry : valueMap.entrySet()) {
-                Label rule = new Label();
-                rule.setFont(ruleFont);
-                rule.setText(stringEntry.getKey());
-                container.getChildren().add(rule);
+//                Label rule = new Label();
+//                rule.setFont(ruleFont);
+//                rule.setText(stringEntry.getKey());
+//                container.getChildren().add(rule);
+                String rule = stringEntry.getKey();
                 String value = stringEntry.getValue();
                 if (value.equals("true") || value.equals("false")) {
-                    CheckBox checkBox = new CheckBox();
+                    CheckBox checkBox = new CheckBox(rule);
+                    checkBox.setFont(ruleFont);
                     checkBox.setSelected(Boolean.parseBoolean(value));
                     container.getChildren().add(checkBox);
                 } else if (value.matches("[\\d]")) {
+                    Label label = new Label(rule);
+                    label.setFont(ruleFont);
                     TextField textField = new TextField();
                     textField.textProperty().addListener(new ChangeListener() {
                         @Override
@@ -138,27 +142,34 @@ public class StartController extends Window {
                         }
                     });
                     textField.setText(value);
-                    container.getChildren().add(textField);
+                    container.getChildren().addAll(label, textField);
+//                    container.getChildren().add(textField);
                 } else {
+                    Label label = new Label(rule);
+                    label.setFont(ruleFont);
                     TextField textField = new TextField();
                     textField.setText(value);
-                    container.getChildren().add(textField);
+                    container.getChildren().addAll(label, textField);
                 }
             }
         }
 
         container.getChildren().add(genRulesLabel);
         for (Map.Entry<String, String> entry : xmlGeneralRules.entrySet()) {
-            Label rule = new Label();
-            rule.setFont(ruleFont);
-            rule.setText(entry.getKey());
-            container.getChildren().add(rule);
+//            Label rule = new Label();
+//            rule.setFont(ruleFont);
+//            rule.setText(entry.getKey());
+//            container.getChildren().add(rule);
+            String rule = entry.getKey();
             String value = entry.getValue();
             if (value.equals("true") || value.equals("false")) {
-                CheckBox checkBox = new CheckBox();
+                CheckBox checkBox = new CheckBox(rule);
+                checkBox.setFont(ruleFont);
                 checkBox.setSelected(Boolean.parseBoolean(value));
                 container.getChildren().add(checkBox);
             } else if (value.matches("[\\d]")) {
+                Label label = new Label(rule);
+                label.setFont(ruleFont);
                 TextField textField = new TextField();
                 textField.textProperty().addListener(new ChangeListener() {
                     @Override
@@ -169,11 +180,13 @@ public class StartController extends Window {
                     }
                 });
                 textField.setText(value);
-                container.getChildren().add(textField);
+                container.getChildren().addAll(label, textField);
             } else {
+                Label label = new Label(rule);
+                label.setFont(ruleFont);
                 TextField textField = new TextField();
                 textField.setText(value);
-                container.getChildren().add(textField);
+                container.getChildren().addAll(label, textField);
             }
         }
     }
@@ -194,8 +207,10 @@ public class StartController extends Window {
                 value = ((TextField) node).getText();
             } else if (node instanceof CheckBox) {
                 if (((CheckBox) node).isSelected()) {
+                    rule = ((CheckBox) node).getText();
                     value = "true";
                 } else {
+                    rule = ((CheckBox) node).getText();
                     value = "false";
                 }
             }
