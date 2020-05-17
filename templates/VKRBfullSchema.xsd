@@ -28,7 +28,7 @@
                 intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true, wordsInclusion=цель задача актуальность;
                 conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true;
                 literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
-                chapter rules: titleContains=ГЛАВА, lastSubsectionTitle=Выводы, minSubsectionQuantity=3, generalRules=true;
+                chapter rules: titleContains=ГЛАВА, lastSubsectionTitle=выводы, minSubsectionQuantity=3, generalRules=true;
                 listOfTermsAndAbbreviations rules: title=СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ
             </xs:appinfo>
         </xs:annotation>

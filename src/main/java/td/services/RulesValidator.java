@@ -62,16 +62,18 @@ public class RulesValidator {
                                 //точное совпадение заголовка
                                 if (stringEntry.getKey().equals("title")) {
                                     if (!document.getSections().get(i).getTitle().trim().equals(stringEntry.getValue())) {
-                                        errors.add("\nНеверный заголовок: '" + document.getSections().get(i).getTitle().trim()
-                                                + "' ожидалось: '" + stringEntry.getValue() + "'.");
+                                        errors.add(String.format("\nНеверный заголовок: '%s', ожидалось: '%s'.",
+                                                document.getSections().get(i).getTitle().trim(), stringEntry.getValue()));
                                     }
                                 }
 
                                 //неточное совпадение заголовка
                                 if (stringEntry.getKey().equals("titleContains")) {
-                                    if (!document.getSections().get(i).getTitle().trim().contains(stringEntry.getValue())) {
-                                        errors.add("\nНеверный заголовок: '" + document.getSections().get(i).getTitle().trim()
-                                                + "' ожидалось, что в заголовке встретится: '" + stringEntry.getValue() + "'.");
+                                    String title = document.getSections().get(i).getTitle().trim();
+                                    String value = stringEntry.getValue().trim();
+                                    String report = validateTitleContains(title, value);
+                                    if(!report.isEmpty()) {
+                                        errors.add(report);
                                     }
                                 }
 
@@ -80,9 +82,12 @@ public class RulesValidator {
                                     if (!document.getSections().get(i).getSubheadersList().isEmpty()) {
                                         int lastSection = document.getSections().get(i).getSubheadersList().size() - 1;
                                         String title = document.getSections().get(i).getSubheadersList().get(lastSection).getTitle().trim();
-                                        if (!title.contains(stringEntry.getValue())) {
-                                            errors.add("\nНеверный послений заголовок раздела: '" + title
-                                                    + "' ожидалось, что в заголовке встретится: '" + stringEntry.getValue() + "'.");
+                                        String value = stringEntry.getValue().trim();
+                                        String sectionTitle = document.getSections().get(i).getTitle();
+                                        String report = validateTitleContains(title, value);
+                                        if(!report.isEmpty()) {
+                                            errors.add(String.format("\nНеверный последний заголовок раздела: '%s'. %s",
+                                                    sectionTitle, report));
                                         }
                                     }
                                 }
@@ -260,7 +265,7 @@ public class RulesValidator {
         return content.toString();
     }
 
-    public List<String> checkWordInclusion(String content, String value, String title) {
+    private List<String> checkWordInclusion(String content, String value, String title) {
         String[] contentWordRaw = content.split(" ");
         Set<String> contentWordSet = new HashSet<>();
         for (String string : contentWordRaw) {
@@ -301,5 +306,23 @@ public class RulesValidator {
             report.add(String.format("\nВ разделе %s заданные слова не найдены.", title));
         }
         return  report;
+    }
+
+    private String validateTitleContains(String title, String value) {
+        String valueInitialForm = jMorfSdk.getStringInitialForm(value.toLowerCase()).get(0);
+        boolean hasUppercase = value.equals(value.toUpperCase());
+        String report = "";
+        if (hasUppercase) {
+            if (!title.contains(valueInitialForm.toUpperCase())) {
+                report = String.format("\nОжидалось, что в заголовке '%s' встретится: '%s'.", title, valueInitialForm.toUpperCase());
+            }
+            return report;
+        } else {
+            String titleLowerCase = title.toLowerCase();
+            if (!titleLowerCase.contains(valueInitialForm)) {
+                report = String.format("\nОжидалось, что в заголовке '%s' встретится: '%s'.", title, valueInitialForm);
+            }
+            return report;
+        }
     }
 }

@@ -1,4 +1,3 @@
-Wrong header level. Cannot continue. Please, correct header levels=Неверный уровень раздела. Для продолжения, необходимо исправить уровни.;
 rules=правила;
 document=документ;
 intro=Введение;
@@ -18,6 +17,6 @@ words=слова;
 wordsInclusion=раздел содержит слова;
 titleContains=заголовок содержит;
 keySensitive=чувствительность к регистру;
-lastSubsectionTitle=заголовок последнего подраздела;
+lastSubsectionTitle=заголовок последнего подраздела содержит;
 minSubsectionQuantity=минимальное количество подразделов;
 maxSubsectionQuantity=максимальное количество подразделов;
