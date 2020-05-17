@@ -15,6 +15,7 @@ title=заголовок;
 subsectionQuantity=количество подразделов;
 generalRules=общие правила;
 words=слова;
+wordsInclusion=раздел содержит слова;
 titleContains=заголовок содержит;
 keySensitive=чувствительность к регистру;
 lastSubsectionTitle=заголовок последнего подраздела;

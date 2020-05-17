@@ -57,8 +57,8 @@ public class StartController extends Window {
     private File docFile;
     private ObservableList<String> documentTypeList = FXCollections.observableArrayList();
     private Map<String, String> schemas = new HashMap<>();
-    private Map<String, Map<String, String>> userSectionRules = new HashMap<>();
-    private Map<String, String> userGeneralRules = new HashMap<>();
+        private Map<String, Map<String, String>> sectionRules = new HashMap<>();
+    private Map<String, String> generalRules = new HashMap<>();
     private XmlRulesGetter rulesGetter = new XmlRulesGetter();
     private Logger log = Logger.getLogger(getClass().getName());
     private Translator translator = new Translator();
@@ -188,6 +188,8 @@ public class StartController extends Window {
     }
 
     void getRules() {
+        Map<String, Map<String, String>> userSectionRules = new HashMap<>();
+        Map<String, String> userGeneralRules = new HashMap<>();
         Map<String, String> currentMap = new HashMap<>();
         String key = "";
         String rule = "";
@@ -232,14 +234,15 @@ public class StartController extends Window {
                 }
             }
         }
-        userSectionRules = translator.translateSectionRulesToEnglish(userSectionRules);
-        userGeneralRules = translator.translateGeneralToEnglish(userGeneralRules);
-//        for (Map.Entry<String, Map<String, String>> entry : userSectionRules.entrySet()) {
-//            System.out.println(entry.getKey() + ": " + entry.getValue());
-//        }
-//        for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
-//            System.out.println(entry.getKey() + ": " + entry.getValue());
-//        }
+        sectionRules = translator.translateSectionRulesToEnglish(userSectionRules);
+        generalRules = translator.translateGeneralToEnglish(userGeneralRules);
+
+        for (Map.Entry<String, Map<String, String>> entry : sectionRules.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        for (Map.Entry<String, String> entry : generalRules.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
     }
 
     @FXML
@@ -249,7 +252,7 @@ public class StartController extends Window {
             reportTextArea.clear();
             Validator validator = new Validator();
             List<String> report = validator.validate(documentTypeChoiceBox.getValue(), docFile.toPath(),
-                    userGeneralRules, userSectionRules);
+                    generalRules, sectionRules);
             for (int i = 0; i < report.size(); i++) {
                 reportTextArea.appendText(report.get(i) + "\n");
             }

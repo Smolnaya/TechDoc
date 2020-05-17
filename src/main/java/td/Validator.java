@@ -76,7 +76,7 @@ public class Validator {
         List<String> errors = rulesValidator.validateRules(userSectionRules, userGeneralRules);
         if (errors.isEmpty()) {
             log.log(Level.INFO, "Third validation - true");
-            report.add("Документ соответствует требованиям.");
+            report.add("\nДокумент соответствует требованиям.");
             return true;
         } else {
             log.log(Level.WARNING, "Third validation - false");

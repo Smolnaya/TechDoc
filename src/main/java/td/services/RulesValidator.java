@@ -2,6 +2,8 @@ package td.services;
 
 import methodOfSummarizationAndElementsOfText.MethodsOfSummarizationAndElementsOfText;
 import ru.library.text.word.Word;
+import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
+import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
 import td.domain.Section;
 import td.domain.Term;
 import td.domain.WordDocument;
@@ -18,6 +20,7 @@ public class RulesValidator {
     private List<String> xsdKeyWords;
     private HashSet<String> commonWords;
     private WordDocument document;
+    private static JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
 
     public RulesValidator(WordDocument document, Path schema,
                           Map<String, String> userGeneralRules) {
@@ -40,6 +43,14 @@ public class RulesValidator {
                         if (entry.getKey().equals(sectionKindList.get(i))) {
                             Map<String, String> rules = entry.getValue();
                             for (Map.Entry<String, String> stringEntry : rules.entrySet()) {
+
+                                //проверка вхождений заданных слов
+                                if (stringEntry.getKey().equals("wordsInclusion")) {
+                                    String content = getSectionContent(document.getSections().get(i));
+                                    String words = stringEntry.getValue();
+                                    String title = document.getSections().get(i).getTitle();
+                                    errors.addAll(checkWordInclusion(content, words, title));
+                                }
 
                                 //поиск разделов для применения общих правил
                                 if (stringEntry.getKey().equals("generalRules")) {
@@ -160,12 +171,15 @@ public class RulesValidator {
                         }
                     }
 
-                    float value = (float) 100 * commonWords.size() / xsdKeyWords.size();
-                    int commonWordsPercentage = round(value);
-                    errors.add("\nСовпадений по ключевым словам: " + commonWordsPercentage + "%");
-                    if (isGetKw) {
-                        errors.add("\nОбщие ключевые слова: ");
-                        errors.addAll(commonWords);
+                    if (!commonWords.isEmpty()) {
+                        float commonWordsPercentage = (float) 100 * commonWords.size() / xsdKeyWords.size();
+                        errors.add(String.format("\nСовпадений по ключевым словам: %.2f%%.", commonWordsPercentage));
+                        if (isGetKw) {
+                            errors.add("Общие ключевые слова: ");
+                            errors.addAll(commonWords);
+                        }
+                    } else {
+                        errors.add("\nВ разделах не найдено заданных ключевых слов.");
                     }
                 }
             }
@@ -244,5 +258,48 @@ public class RulesValidator {
             }
         }
         return content.toString();
+    }
+
+    public List<String> checkWordInclusion(String content, String value, String title) {
+        String[] contentWordRaw = content.split(" ");
+        Set<String> contentWordSet = new HashSet<>();
+        for (String string : contentWordRaw) {
+            contentWordSet.add(string.replaceAll("[^A-Za-zА-Яа-я]", ""));
+        }
+        Set<String> initialContentWord = new HashSet<>();
+        for (String string : contentWordSet) {
+            List<String> wordForms = jMorfSdk.getStringInitialForm(string);
+            if (!wordForms.isEmpty()) {
+                initialContentWord.add(wordForms.get(0));
+            }
+        }
+
+        String[] words = value.split(" ");
+        Set<String> initialUserWords = new HashSet<>();
+        for (String string : words) {
+            List<String> wordForms = jMorfSdk.getStringInitialForm(string);
+            if (!wordForms.isEmpty()) {
+                initialUserWords.add(wordForms.get(0));
+            }
+        }
+
+        List<String> foundWords = new ArrayList<>();
+        for (String userWord : initialUserWords) {
+            for (String contentWord : initialContentWord) {
+                if (userWord.equals(contentWord)) {
+                    foundWords.add(userWord);
+                }
+            }
+        }
+
+        List<String> report = new ArrayList<>();
+        if (!foundWords.isEmpty()) {
+            float percent = (float) 100 * foundWords.size() / initialUserWords.size();
+            report.add(String.format("\nВ разделе %s найдено %.2f%% заданных слов:", title, percent));
+            report.addAll(foundWords);
+        } else {
+            report.add(String.format("\nВ разделе %s заданные слова не найдены.", title));
+        }
+        return  report;
     }
 }
