@@ -11,8 +11,6 @@ import td.domain.WordDocument;
 import java.nio.file.Path;
 import java.util.*;
 
-import static java.lang.Math.round;
-
 public class RulesValidator {
     private List<Section> generalRulesSections;
     private List<String> sectionKindList;
@@ -22,8 +20,7 @@ public class RulesValidator {
     private WordDocument document;
     private static JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
 
-    public RulesValidator(WordDocument document, Path schema,
-                          Map<String, String> userGeneralRules) {
+    public RulesValidator(WordDocument document, Path schema, Map<String, String> userGeneralRules) {
         XmlRulesGetter xmlRules = new XmlRulesGetter();
         this.generalRulesSections = new ArrayList<>();
         this.document = document;
@@ -43,6 +40,15 @@ public class RulesValidator {
                         if (entry.getKey().equals(sectionKindList.get(i))) {
                             Map<String, String> rules = entry.getValue();
                             for (Map.Entry<String, String> stringEntry : rules.entrySet()) {
+
+                                //получение ключевых слов раздела
+                                if (stringEntry.getKey().equals("getKeyWords")) {
+                                    if (Boolean.parseBoolean(stringEntry.getValue())) {
+                                        List<String> sectionKeyWords = getSectionKeyWords(document.getSections().get(i));
+                                        errors.add("\n" + document.getSections().get(i).getTitle() + " ключевые слова:");
+                                        errors.addAll(sectionKeyWords);
+                                    }
+                                }
 
                                 //проверка вхождений заданных слов
                                 if (stringEntry.getKey().equals("wordsInclusion")) {
@@ -72,7 +78,7 @@ public class RulesValidator {
                                     String title = document.getSections().get(i).getTitle().trim();
                                     String value = stringEntry.getValue().trim();
                                     String report = validateTitleContains(title, value);
-                                    if(!report.isEmpty()) {
+                                    if (!report.isEmpty()) {
                                         errors.add(report);
                                     }
                                 }
@@ -85,7 +91,7 @@ public class RulesValidator {
                                         String value = stringEntry.getValue().trim();
                                         String sectionTitle = document.getSections().get(i).getTitle();
                                         String report = validateTitleContains(title, value);
-                                        if(!report.isEmpty()) {
+                                        if (!report.isEmpty()) {
                                             errors.add(String.format("\nНеверный последний заголовок раздела: '%s'. %s",
                                                     sectionTitle, report));
                                         }
@@ -138,22 +144,16 @@ public class RulesValidator {
         }
     }
 
-    public List<String> getUserKeyWords(Map<String, String> userGeneralRules) {
-        List<String> kw = new ArrayList<>();
-        for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
-            if (entry.getKey().equals("keyWords")) {
-                String words[] = entry.getValue().split(" ");
-                kw.addAll(Arrays.asList(words));
-            }
-        }
-        return kw;
-    }
-
     public List<String> validateGeneralRules(Map<String, String> userGeneralRules) {
         List<String> errors = new ArrayList<>();
         boolean isGetKw = false;
 
         for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
+
+            //проверка пересечения ключевых слов разделов
+            if (entry.getKey().equals("keywordIntersection")) {
+                errors.addAll(validateKeywordsBySections());
+            }
 
             //поиск ключевых слов в документе
             if (entry.getKey().equals("getKeyWords")) {
@@ -179,10 +179,8 @@ public class RulesValidator {
                     if (!commonWords.isEmpty()) {
                         float commonWordsPercentage = (float) 100 * commonWords.size() / xsdKeyWords.size();
                         errors.add(String.format("\nСовпадений по ключевым словам: %.2f%%.", commonWordsPercentage));
-                        if (isGetKw) {
-                            errors.add("Общие ключевые слова: ");
-                            errors.addAll(commonWords);
-                        }
+                        errors.add("Общие ключевые слова: ");
+                        errors.addAll(commonWords);
                     } else {
                         errors.add("\nВ разделах не найдено заданных ключевых слов.");
                     }
@@ -192,13 +190,25 @@ public class RulesValidator {
             //проверка аббревиатур
             if (entry.getKey().equals("validateAbbreviation")) {
                 if (Boolean.parseBoolean(entry.getValue())) {
-                    errors.add("\nПроверка аббревиатур");
+                    errors.add("\n\tПроверка аббревиатур");
                     errors.addAll(validateAbbreviation(document));
                 }
             }
         }
 
         return errors;
+    }
+
+    private List<String> getSectionKeyWords(Section section) {
+        String sectionContent = getSectionContent(section);
+        List<String> sectionKeyWords = new ArrayList<>();
+        if (!sectionContent.trim().isEmpty()) {
+            List<Word> keyWords = getKeyWords(sectionContent);
+            for (int j = 0; j < keyWords.size(); j++) {
+                sectionKeyWords.add(keyWords.get(j).getWord());
+            }
+        }
+        return sectionKeyWords;
     }
 
     private void getDocumentKeyWords() {
@@ -213,6 +223,17 @@ public class RulesValidator {
         }
     }
 
+    public List<String> getUserKeyWords(Map<String, String> userGeneralRules) {
+        List<String> kw = new ArrayList<>();
+        for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
+            if (entry.getKey().equals("keyWords")) {
+                String words[] = entry.getValue().split(" ");
+                kw.addAll(Arrays.asList(words));
+            }
+        }
+        return kw;
+    }
+
     private List<String> validateAbbreviation(WordDocument document) {
         List<String> errors = new ArrayList<>();
         for (int j = 0; j < sectionKindList.size(); j++) {
@@ -222,7 +243,7 @@ public class RulesValidator {
                     Set<String> abbreviationInText = AbbreviationValidator.getAbbrInText(generalRulesSections);
                     Iterator<String> iterator = abbreviationInText.iterator();
                     List<String> foundAbbr = new ArrayList<>();
-                    foundAbbr.add("\nНайденные совпадения: ");
+                    foundAbbr.add("Найденные совпадения: ");
                     while (iterator.hasNext()) {
                         for (int k = 0; k < termList.size(); k++) {
                             String str = iterator.next();
@@ -237,7 +258,7 @@ public class RulesValidator {
                         errors.addAll(foundAbbr);
                     }
                     if (!abbreviationInText.isEmpty()) {
-                        errors.add("\nВ тексте найдены аббревиатуры, которые не указаны в списке аббревиатур: " +
+                        errors.add("В тексте найдены аббревиатуры, которые не указаны в списке аббревиатур: " +
                                 abbreviationInText);
                     }
                 } else errors.add("Список аббревиатур не найден.");
@@ -300,12 +321,12 @@ public class RulesValidator {
         List<String> report = new ArrayList<>();
         if (!foundWords.isEmpty()) {
             float percent = (float) 100 * foundWords.size() / initialUserWords.size();
-            report.add(String.format("\nВ разделе %s найдено %.2f%% заданных слов:", title, percent));
+            report.add(String.format("\nВ разделе '%s' найдено %.2f%% заданных слов:", title, percent));
             report.addAll(foundWords);
         } else {
-            report.add(String.format("\nВ разделе %s заданные слова не найдены.", title));
+            report.add(String.format("\nВ разделе '%s' заданные слова не найдены.", title));
         }
-        return  report;
+        return report;
     }
 
     private String validateTitleContains(String title, String value) {
@@ -324,5 +345,98 @@ public class RulesValidator {
             }
             return report;
         }
+    }
+
+    private List<String> validateKeywordsBySections() {
+        Map<Integer, Section> sectionMap = new HashMap<>();
+        for (int i = 0; i < generalRulesSections.size(); i++) {
+            sectionMap.put(i + 1, generalRulesSections.get(i));
+        }
+        int[] array = null;
+        List<Section[]> sectionCombinationsArray = new ArrayList<>();
+        while ((array = getSectionCombinations(sectionMap.size(), 2, array)) != null) {
+            Section[] sections = new Section[2];
+            for (Map.Entry<Integer, Section> entry : sectionMap.entrySet()) {
+                if (entry.getKey().equals(array[0])) {
+                    sections[0] = entry.getValue();
+                }
+                if (entry.getKey().equals(array[1])) {
+                    sections[1] = entry.getValue();
+                }
+            }
+            sectionCombinationsArray.add(sections);
+        }
+
+        List<String> report = new ArrayList<>();
+        for (Section[] sections : sectionCombinationsArray) {
+            report.addAll(getSectionsCommonKeywords(sections));
+        }
+
+        return report;
+    }
+
+    private int[] getSectionCombinations(int n, int k, int[] arr) {
+        if (arr == null) {
+            arr = new int[k];
+            for (int i = 0; i < k; i++) {
+                arr[i] = i + 1;
+            }
+            return arr;
+        }
+        for (int i = k - 1; i >= 0; i--) {
+            if (arr[i] < n - k + i + 1) {
+                arr[i]++;
+                for (int j = i; j < k - 1; j++) {
+                    arr[j + 1] = arr[j] + 1;
+                }
+                return arr;
+            }
+        }
+        return null;
+    }
+
+    private List<String> getSectionsCommonKeywords(Section[] sections) {
+        Set<String> commonSectionsKeywords = new HashSet<>();
+
+        String firstSectionContent = getSectionContent(sections[0]);
+        List<Word> firstSectionWords = getKeyWords(firstSectionContent);
+        List<String> firstSectionKeywords = new ArrayList<>();
+        for (Word word : firstSectionWords) {
+            firstSectionKeywords.add(word.getWord());
+        }
+
+        String secondSectionContent = getSectionContent(sections[1]);
+        List<Word> secondSectionWords = getKeyWords(secondSectionContent);
+        List<String> secondSectionKeywords = new ArrayList<>();
+        for (Word word : secondSectionWords) {
+            secondSectionKeywords.add(word.getWord());
+        }
+
+        for (String kw1 : firstSectionKeywords) {
+            for (String kw2 : secondSectionKeywords) {
+                if (kw1.equals(kw2)) {
+                    commonSectionsKeywords.add(kw1);
+                }
+            }
+        }
+
+        List<String> report = new ArrayList<>();
+        report.add(String.format("\n\tПроверка пересечений ключевых слов разделов '%s' и '%s'",
+                sections[0].getTitle(), sections[1].getTitle()));
+        if (!commonSectionsKeywords.isEmpty()) {
+            int size = 0;
+            if (firstSectionKeywords.size() < secondSectionKeywords.size()) {
+                size = firstSectionKeywords.size();
+            } else {
+                size = secondSectionKeywords.size();
+            }
+            float percent = (float) 100 * commonSectionsKeywords.size() / size;
+
+            report.add(String.format("Найдено %.2f%% общих ключевых слов:", percent));
+            report.addAll(commonSectionsKeywords);
+        } else {
+            report.add("Не найдено общих ключевых слов.");
+        }
+        return report;
     }
 }

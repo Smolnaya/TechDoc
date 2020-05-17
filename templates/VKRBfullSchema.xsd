@@ -24,11 +24,11 @@
     <xs:element name="document" mc:kind="document">
         <xs:annotation>
             <xs:appinfo>
-                document rules: validateAbbreviation=false, validateKeyWords=false, getKeyWords=false, keyWords=задача документация технический правило;
-                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true, wordsInclusion=цель задача актуальность;
-                conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true;
+                document rules: validateAbbreviation=false, validateKeyWords=false, keywordIntersection=true, keyWords=задача документация технический правило;
+                intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true, wordsInclusion=цель задача актуальность, getKeyWords=false;
+                conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true, getKeyWords=false;
                 literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
-                chapter rules: titleContains=ГЛАВА, lastSubsectionTitle=выводы, minSubsectionQuantity=3, generalRules=true;
+                chapter rules: titleContains=ГЛАВА, lastSubsectionTitle=выводы, minSubsectionQuantity=3, generalRules=true, getKeyWords=false;
                 listOfTermsAndAbbreviations rules: title=СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ
             </xs:appinfo>
         </xs:annotation>

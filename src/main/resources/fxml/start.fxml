@@ -43,7 +43,7 @@
         </Button>
         <TextArea fx:id="reportTextArea" editable="false" layoutX="240.0" layoutY="32.0" prefHeight="545.0" prefWidth="732.0" wrapText="true" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
             <font>
-                <Font name="Times New Roman" size="14.0" />
+                <Font name="Times New Roman" size="18.0" />
             </font>
          <opaqueInsets>
             <Insets />
