@@ -236,13 +236,6 @@ public class StartController extends Window {
         }
         sectionRules = translator.translateSectionRulesToEnglish(userSectionRules);
         generalRules = translator.translateGeneralToEnglish(userGeneralRules);
-
-        for (Map.Entry<String, Map<String, String>> entry : sectionRules.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
-        for (Map.Entry<String, String> entry : generalRules.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
     }
 
     @FXML
