@@ -2,24 +2,23 @@
     -fx-background-color: #e7f5dc;
 }
 
-.choice-box {
-    -fx-background-color: linear-gradient(to top, #64ac8f, #94d6ba);
-    -fx-mark-color: #64ac8f;
+.combo-box {
+    -fx-background-color: linear-gradient(to top, #6fbfa1, #a5eed2);
     -fx-background-radius: 30px;
 }
 
-.choice-box .context-menu {
+.combo-box .list-cell {
     -fx-background-color: #94d6ba;
-    -fx-background-radius: 10px;
-}
-
-.choice-box .menu-item:focused {
-    -fx-background-color: #64ac8f;
     -fx-background-radius: 30px;
 }
 
-.choice-box .menu-item > .label {
-    -fx-pref-width: 300;
+.combo-box .list-cell:focused {
+    -fx-background-color: #7ed2b3;
+}
+
+.combo-box .list-view {
+    -fx-background-radius: 20px;
+    -fx-background-color: #94d6ba;
 }
 
 .button {

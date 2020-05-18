@@ -48,8 +48,11 @@ public class StartController extends Window {
     @FXML
     private TextArea reportTextArea;
 
+//    @FXML
+//    private ChoiceBox<String> documentTypeChoiceBox;
+
     @FXML
-    private ChoiceBox<String> documentTypeChoiceBox;
+    private ComboBox<String> documentTypeComboBox;
 
     @FXML
     ScrollPane rulesScrollPane;
@@ -57,33 +60,29 @@ public class StartController extends Window {
     private File docFile;
     private ObservableList<String> documentTypeList = FXCollections.observableArrayList();
     private Map<String, String> schemas = new HashMap<>();
-        private Map<String, Map<String, String>> sectionRules = new HashMap<>();
+    private Map<String, Map<String, String>> sectionRules = new HashMap<>();
     private Map<String, String> generalRules = new HashMap<>();
     private XmlRulesGetter rulesGetter = new XmlRulesGetter();
     private Logger log = Logger.getLogger(getClass().getName());
     private Translator translator = new Translator();
 
-    Font ruleFont = Font.font("Times New Roman", 15);
-    Font keyFont = Font.font("Times New Roman", FontWeight.BOLD, 14);
+    private Font ruleFont = Font.font("Times New Roman", 15);
+    private Font keyFont = Font.font("Times New Roman", FontWeight.BOLD, 14);
 
     @FXML
     public void initialize() {
-        rulesScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        rulesScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        rulesScrollPane.setContent(container);
-
         schemas.put("ВКРБ", "libs/xsd/VKRB.xsd");
         schemas.put("Техническое задание", "libs/xsd/GOST34_602_89.xsd");
         schemas.put("Руководство пользователя", "libs/xsd/RD_50_34_698_90.xsd");
-
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
             documentTypeList.add(entry.getKey());
         }
-        documentTypeChoiceBox.setValue(documentTypeList.get(0));
-        documentTypeChoiceBox.setItems(documentTypeList);
+
+        documentTypeComboBox.setItems(documentTypeList);
+        documentTypeComboBox.getSelectionModel().select(0);
 
         chooseSchema();
-        documentTypeChoiceBox.setOnAction(event -> chooseSchema());
+        documentTypeComboBox.setOnAction(event -> chooseSchema());
     }
 
     @FXML
@@ -106,7 +105,7 @@ public class StartController extends Window {
         container.getChildren().clear();
         Path xsdPath = null;
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
-            if (entry.getKey().equals(documentTypeChoiceBox.getValue())) {
+            if (entry.getKey().equals(documentTypeComboBox.getValue())) {
                 xsdPath = Paths.get(entry.getValue());
             }
         }
@@ -249,7 +248,7 @@ public class StartController extends Window {
             getRules();
             reportTextArea.clear();
             Validator validator = new Validator();
-            List<String> report = validator.validate(documentTypeChoiceBox.getValue(), docFile.toPath(),
+            List<String> report = validator.validate(documentTypeComboBox.getValue(), docFile.toPath(),
                     generalRules, sectionRules);
             for (int i = 0; i < report.size(); i++) {
                 reportTextArea.appendText(report.get(i) + "\n");
