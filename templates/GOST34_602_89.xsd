@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:mc="http://textanalysis.ru"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="levelType">
+        <xs:restriction base="xs:int">
+            <xs:minExclusive value="-1"/>
+            <xs:maxExclusive value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="section">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="content" type="xs:string" minOccurs="0"/>
+                <xs:element ref="section" minOccurs="0" maxOccurs="15"/>
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="document" mc:kind="document">
+        <xs:annotation>
+            <xs:appinfo>
+                document rules: validateKeyWords=false;
+                generalInformation rules: title=общие сведения;
+                appointmentAndPurposes rules: title=назначение и цели создания (развития) системы;
+                objectsAutomationCharacteristics rules: title=характеристика объектов автоматизации;
+                systemRequirements rules: title=требования к системе;
+                worksCompositionAndContent rules: title=состав и содержание работ по созданию системы;
+                systemControlAndAcceptance rules: title=порядок контроля и приемки системы;
+                requirementsEnterSystem rules: title=требования к составу и содержанию работ по подготовке объекта
+                автоматизации к вводу системы в действие;
+                documentationRequirements rules: title=требования к документированию;
+                developmentSources rules: title=источники разработки;
+                appendices rules: title=приложения;
+            </xs:appinfo>
+        </xs:annotation>
+
+        <xs:complexType>
+            <xs:sequence>
+
+                <!--1. ОБЩИЕ СВЕДЕНИЯ-->
+                <xs:element ref="section" mc:kind="generalInformation" mc:generalRules="true"/>
+
+                <!--2. НАЗНАЧЕНИЕ И ЦЕЛИ СОЗДАНИЯ (РАЗВИТИЯ) СИСТЕМЫ-->
+                <xs:element ref="section" mc:kind="appointmentAndPurposes" mc:generalRules="true"/>
+
+                <!--3. ХАРАКТЕРИСТИКА ОБЪЕКТОВ АВТОМАТИЗАЦИИ-->
+                <xs:element ref="section" mc:kind="objectsAutomationCharacteristics" mc:generalRules="true"/>
+
+                <!--4. ТРЕБОВАНИЯ К СИСТЕМЕ-->
+                <xs:element ref="section" mc:kind="systemRequirements" mc:generalRules="true"/>
+
+                <!--5. СОСТАВ И СОДЕРЖАНИЕ РАБОТ ПО СОЗДАНИЮ СИСТЕМЫ-->
+                <xs:element ref="section" mc:kind="worksCompositionAndContent" mc:generalRules="true"/>
+
+                <!--6. ПОРЯДОК КОНТРОЛЯ И ПРИЕМКИ СИСТЕМЫ-->
+                <xs:element ref="section" mc:kind="systemControlAndAcceptance" mc:generalRules="true"/>
+
+                <!--7. ТРЕБОВАНИЯ К СОСТАВУ И СОДЕРЖАНИЮ РАБОТ ПО ПОДГОТОВКЕ ОБЪЕКТА АВТОМАТИЗАЦИИ К ВВОДУ СИСТЕМЫ В ДЕЙСТВИЕ-->
+                <xs:element ref="section" mc:kind="requirementsEnterSystem" mc:generalRules="true"/>
+
+                <!--8. ТРЕБОВАНИЯ К ДОКУМЕНТИРОВАНИЮ-->
+                <xs:element ref="section" mc:kind="documentationRequirements" mc:generalRules="true"/>
+
+                <!--9. ИСТОЧНИКИ РАЗРАБОТКИ-->
+                <xs:element ref="section" mc:kind="developmentSources" mc:generalRules="true"/>
+
+                <!--ПРИЛОЖЕНИЯ-->
+                <xs:element ref="section" mc:kind="appendices" mc:generalRules="false" minOccurs="0" maxOccurs="10"/>
+
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType"/>
+        </xs:complexType>
+
+    </xs:element>
+
+</xs:schema>

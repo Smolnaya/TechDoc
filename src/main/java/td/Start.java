@@ -11,7 +11,7 @@ import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
 
 public class Start extends Application {
     public static void main(String[] args) throws Exception {
-        JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
+//        JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
         launch(args);
     }
 

@@ -18,36 +18,52 @@ public class Validator {
     private WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
     private XmlFileCreator xmlCreator = new XmlFileCreator();
     private static final String XML_FILE = "templates/generatedXml.xml";
-    private static final String VKRB_SCHEMA = "templates/VKRBschema.xsd";
-    private static final String FULL_VKRB_SCHEMA = "templates/VKRBfullSchema.xsd";
+    private static final String FULL_VKRB_SCHEMA = "templates/VKRB.xsd";
+    private static final String GOST34_602_89 = "templates/GOST34_602_89.xsd";
+    private static final String RD_50_34_698_90 = "templates/RD_50_34_698_90.xsd";
 
     private List<String> report = new ArrayList<>();
 
     public List<String> validate(String docType, Path docPath, Map<String, String> userGeneralRules,
                                  Map<String, Map<String, String>> userSectionRules) {
         String schema = "";
-        if (docType.equals("Дипломная работа")) {
-            schema = VKRB_SCHEMA;
-        } else if (docType.equals("ВКРБ")) {
+        if (docType.equals("ВКРБ")) {
             schema = FULL_VKRB_SCHEMA;
+        } else if (docType.equals("Техническое задание")) {
+            schema = GOST34_602_89;
+        } else if (docType.equals("Руководство пользователя")) {
+            schema = RD_50_34_698_90;
         }
         WordDocument document = validateDocModel(docPath);
         if (!document.getSections().isEmpty()) {
+            System.out.println(document.getSections().get(0).getContent());
+            for (int i = 0; i < document.getSections().size(); i++) {
+            }
             if (validateXml(schema)) {
                 if (validateRules(Paths.get(schema), document, userGeneralRules, userSectionRules)) {
                     log.log(Level.INFO, "Validation - true!");
                     return report;
-                } else return report;
-            } else return report;
-        } else return report;
+                } else {
+                    return report;
+                }
+            } else {
+                return report;
+            }
+        } else {
+            return report;
+        }
     }
 
     private WordDocument validateDocModel(Path docPath) {
         try {
             WordDocument document = wordDocumentCreator.createNewDocument(docPath);
             xmlCreator.createNewXmlTree(document);
-            log.log(Level.INFO, "First validation - true");
-            report.add("Структура документа верна.");
+            if (document.getSections().isEmpty()) {
+                report.add("Заголовки не найдены. Примените специальные стили для заголовков.");
+            } else {
+                log.log(Level.INFO, "First validation - true");
+                report.add("Структура документа верна.");
+            }
             return document;
         } catch (Exception e) {
             log.log(Level.WARNING, e.getMessage());

@@ -72,8 +72,9 @@ public class StartController extends Window {
         rulesScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         rulesScrollPane.setContent(container);
 
-        schemas.put("ВКРБ", "templates/VKRBfullSchema.xsd");
-        schemas.put("ВКР", "templates/VKRBschema.xsd");
+        schemas.put("ВКРБ", "templates/VKRB.xsd");
+        schemas.put("Техническое задание", "templates/GOST34_602_89.xsd");
+        schemas.put("Руководство пользователя", "templates/RD_50_34_698_90.xsd");
 
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
             documentTypeList.add(entry.getKey());
@@ -117,6 +118,7 @@ public class StartController extends Window {
 
         for (Map.Entry<String, Map<String, String>> entry : xmlSectionRules.entrySet()) {
             Label key = new Label();
+            key.setWrapText(true);
             key.setFont(keyFont);
             key.setText(entry.getKey());
             container.getChildren().add(key);
@@ -127,11 +129,13 @@ public class StartController extends Window {
                 if (value.equals("true") || value.equals("false")) {
                     CheckBox checkBox = new CheckBox(rule);
                     checkBox.setFont(ruleFont);
+                    checkBox.setWrapText(true);
                     checkBox.setSelected(Boolean.parseBoolean(value));
                     container.getChildren().add(checkBox);
                 } else if (value.matches("[\\d]")) {
                     Label label = new Label(rule);
                     label.setFont(ruleFont);
+                    label.setWrapText(true);
                     TextField textField = new TextField();
                     textField.textProperty().addListener(new ChangeListener() {
                         @Override
@@ -146,6 +150,7 @@ public class StartController extends Window {
                 } else {
                     Label label = new Label(rule);
                     label.setFont(ruleFont);
+                    label.setWrapText(true);
                     TextField textField = new TextField();
                     textField.setText(value);
                     container.getChildren().addAll(label, textField);

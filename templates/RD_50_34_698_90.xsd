@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:mc="http://textanalysis.ru"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="levelType">
+        <xs:restriction base="xs:int">
+            <xs:minExclusive value="-1"/>
+            <xs:maxExclusive value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="section">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="content" type="xs:string" minOccurs="0"/>
+                <xs:element ref="section" minOccurs="0" maxOccurs="15"/>
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="document" mc:kind="document">
+        <xs:annotation>
+            <xs:appinfo>
+                document rules: validateKeyWords=false;
+                intro rules: title=введение;
+                purposeAndConditionsOfUse rules: title=назначение и условия применения;
+                preparationForWork rules: title=подготовка к работе;
+                operationDescription rules: title=описание операций;
+                emergencySituations rules: title=аварийные ситуации;
+                developmentRecommendations rules: title=рекомендации к освоению;
+                appendices rules: title=приложения;
+            </xs:appinfo>
+        </xs:annotation>
+
+        <xs:complexType>
+            <xs:sequence>
+
+                <!--1. Введение-->
+                <xs:element ref="section" mc:kind="intro" mc:generalRules="true"/>
+
+                <!--2. Назначение и условия применения-->
+                <xs:element ref="section" mc:kind="purposeAndConditionsOfUse" mc:generalRules="true"/>
+
+                <!--3. Подготовка к работе-->
+                <xs:element ref="section" mc:kind="preparationForWork" mc:generalRules="true"/>
+
+                <!--4. Описание операций-->
+                <xs:element ref="section" mc:kind="operationDescription" mc:generalRules="true"/>
+
+                <!--5. Аварийные ситуации-->
+                <xs:element ref="section" mc:kind="emergencySituations" mc:generalRules="true"/>
+
+                <!--6. Рекомендации к освоению-->
+                <xs:element ref="section" mc:kind="developmentRecommendations" mc:generalRules="true"/>
+
+                <!--ПРИЛОЖЕНИЯ-->
+                <xs:element ref="section" mc:kind="appendices" mc:generalRules="false" minOccurs="0" maxOccurs="10"/>
+
+            </xs:sequence>
+            <xs:attribute name="level" type="levelType"/>
+        </xs:complexType>
+
+    </xs:element>
+
+</xs:schema>
