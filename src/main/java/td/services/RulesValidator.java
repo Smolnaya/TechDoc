@@ -69,7 +69,8 @@ public class RulesValidator {
 
                                 //точное совпадение заголовка
                                 if (stringEntry.getKey().equals("title")) {
-                                    if (!document.getSections().get(i).getTitle().trim().equals(stringEntry.getValue())) {
+                                    if (!document.getSections().get(i).getTitle().trim().toLowerCase()
+                                            .equals(stringEntry.getValue().toLowerCase())) {
                                         errors.add(String.format("\nНеверный заголовок: '%s', ожидалось: '%s'.",
                                                 document.getSections().get(i).getTitle().trim(), stringEntry.getValue()));
                                     }
@@ -209,20 +210,20 @@ public class RulesValidator {
         List<String> sectionKeyWords = new ArrayList<>();
         if (!sectionContent.trim().isEmpty()) {
             List<Word> keyWords = getKeyWords(sectionContent);
-            for (int j = 0; j < keyWords.size(); j++) {
-                sectionKeyWords.add(keyWords.get(j).getWord());
+            for (Word keyWord : keyWords) {
+                sectionKeyWords.add(keyWord.getWord());
             }
         }
         return sectionKeyWords;
     }
 
     private void getDocumentKeyWords() {
-        for (int i = 0; i < generalRulesSections.size(); i++) {
-            String content = getSectionContent(generalRulesSections.get(i));
+        for (Section generalRulesSection : generalRulesSections) {
+            String content = getSectionContent(generalRulesSection);
             if (!content.trim().isEmpty()) {
                 List<Word> keyWords = getKeyWords(content);
-                for (int j = 0; j < keyWords.size(); j++) {
-                    documentKeyWords.add(keyWords.get(j).getWord());
+                for (Word keyWord : keyWords) {
+                    documentKeyWords.add(keyWord.getWord());
                 }
             }
         }
@@ -232,7 +233,7 @@ public class RulesValidator {
         List<String> kw = new ArrayList<>();
         for (Map.Entry<String, String> entry : userGeneralRules.entrySet()) {
             if (entry.getKey().equals("keyWords")) {
-                String words[] = entry.getValue().split(" ");
+                String[] words = entry.getValue().split(" ");
                 kw.addAll(Arrays.asList(words));
             }
         }
@@ -250,10 +251,10 @@ public class RulesValidator {
                     List<String> foundAbbr = new ArrayList<>();
                     foundAbbr.add("Найденные совпадения: ");
                     while (iterator.hasNext()) {
-                        for (int k = 0; k < termList.size(); k++) {
+                        for (Term term : termList) {
                             String str = iterator.next();
-                            if ((str.equals(termList.get(k).getTerm()))) {
-                                foundAbbr.add(termList.get(k).getTerm());
+                            if ((str.equals(term.getTerm()))) {
+                                foundAbbr.add(term.getTerm());
                                 iterator.remove();
                                 break;
                             }
@@ -274,8 +275,7 @@ public class RulesValidator {
 
     private List<Word> getKeyWords(String content) {
         MethodsOfSummarizationAndElementsOfText ms = new MethodsOfSummarizationAndElementsOfText();
-        List<Word> keyWords = ms.getKeyWords(content);
-        return keyWords;
+        return ms.getKeyWords(content);
     }
 
     private String getSectionContent(Section section) {
@@ -406,12 +406,7 @@ public class RulesValidator {
         report.add(String.format("\n\tПроверка пересечений ключевых слов разделов '%s' и '%s'",
                 sections[0].getTitle(), sections[1].getTitle()));
         if (!commonSectionsKeywords.isEmpty()) {
-            int size = 0;
-            if (firstSectionKeywords.size() < secondSectionKeywords.size()) {
-                size = firstSectionKeywords.size();
-            } else {
-                size = secondSectionKeywords.size();
-            }
+            int size = Math.min(firstSectionKeywords.size(), secondSectionKeywords.size());
             float percent = (float) 100 * commonSectionsKeywords.size() / size;
 
             report.add(String.format("Найдено %.2f%% общих ключевых слов:", percent));
