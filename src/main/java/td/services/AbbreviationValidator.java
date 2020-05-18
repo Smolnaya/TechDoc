@@ -1,17 +1,11 @@
 package td.services;
 
-import org.apache.poi.xwpf.usermodel.*;
 import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
 import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
 import ru.textanalysis.tawt.ms.storage.OmoFormList;
-import ru.textanalysis.tfwwt.parser.string.Parser;
-import td.domain.AbbreviationAndText;
 import td.domain.Section;
 import td.domain.Term;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,113 +14,45 @@ import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyP
 import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyParameters.Name.IDENTIFIER;
 
 public class AbbreviationValidator {
-    private static XWPFStyles styles;
     private static JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
-    private static List<String> terms = Arrays.asList("СОКРАЩЕНИЯ", "НАИМЕНОВАНИЯ", "ТЕРМИНОВ", "ТЕРМИНЫ");
-
-    public static Boolean validAbbreviations(File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file);
-             XWPFDocument document = new XWPFDocument(fis)) {
-            styles = document.getStyles();
-            ListIterator<IBodyElement> iterator = document.getBodyElements().listIterator();
-            List<AbbreviationAndText> abbreviation = getAbbreviations(iterator);
-            List<XWPFParagraph> text = getAbbreviationInText(document.getParagraphs().listIterator());
-
-            Set<String> validateGr = validateGr(text, abbreviation);
-            Set<String> validateMorf = validateMorf(text, abbreviation);
-
-            System.out.println("Graf: " + validateGr);
-            System.out.println("Morf: " + validateMorf);
-            return !validateGr.isEmpty() && !validateMorf.isEmpty();
-        }
-    }
 
     public static List<Term> getTermList(Section document) {
         List<String> contentList = document.getContent();
         List<Term> termList = new ArrayList<>();
-        for (int i = 0; i < contentList.size(); i++) {
-            String[] term = contentList.get(i).trim().split(" – ");
+        for (String s : contentList) {
+            String[] term = s.trim().split(" – ");
             termList.add(new Term(term[0], term[1]));
         }
         return termList;
     }
 
-    private static List<AbbreviationAndText> getAbbreviations(ListIterator<IBodyElement> iterator) {
-        List<AbbreviationAndText> paragraphs = new ArrayList<>();
-        while (iterator.hasNext()) {
-            IBodyElement element = iterator.next();
-            if (element instanceof XWPFParagraph) {
-                XWPFParagraph prg = (XWPFParagraph) element;
-                if (prg.getStyleID() != null) {
-                    if (isStyleBy(styles, prg)) {
-                        List<String> word = Arrays.asList(prg.getText().toUpperCase().split(" "));
-                        if (terms.stream().anyMatch(word::contains)) {
-                            while (iterator.hasNext()) {
-                                element = iterator.next();
-                                if (element instanceof XWPFParagraph) {
-                                    prg = (XWPFParagraph) element;
-                                    if (!isStyleBy(styles, prg)) {
-                                        if (!prg.getText().trim().isEmpty()) {
-                                            String abr = prg.getText().split(" ")[0].trim();
-                                            paragraphs.add(new AbbreviationAndText(abr, prg.getText()));
-                                        }
-                                    } else {
-                                        break;
-                                    }
-                                } else {
-                                    XWPFTable table = (XWPFTable) element;
-                                    for (XWPFTableRow row : table.getRows()) {
-                                        paragraphs.add(new AbbreviationAndText(row.getCell(0).getText(), row.getCell(1).getText()));
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return paragraphs;
-    }
-
-    private static List<XWPFParagraph> getAbbreviationInText(ListIterator<XWPFParagraph> iterator) {
-        List<XWPFParagraph> list = new ArrayList<>();
-        while (iterator.hasNext()) {
-            list.add(iterator.next());
-        }
-        return list;
-    }
-
-    private static boolean isStyleBy(XWPFStyles styles, XWPFParagraph prg) {
-        return prg.getStyleID() != null && styles.getStyle(prg.getStyleID()).getName().equals("heading 1");
-    }
-
     public static Set<String> getAbbrInText(List<Section> sections) {
         List<String> content = new ArrayList<>();
-        for (int i = 0; i < sections.size(); i++) {
-            List<String> text = getContent(sections.get(i));
+        for (Section section : sections) {
+            List<String> text = getContent(section);
             content.addAll(text);
         }
 
         Set<String> abbreviationInText = new HashSet<>();
-        for (int i = 0; i < content.size(); i++) {
-            String[] word = content.get(i).trim().split(" ");
-            for (int j = 0; j < word.length; j++) {
+        for (String value : content) {
+            String[] word = value.trim().split(" ");
+            for (String s : word) {
                 Pattern pattern = Pattern.compile("([А-ЯA-Z]{2,})");
-                Matcher matcher = pattern.matcher(word[j]);
+                Matcher matcher = pattern.matcher(s);
                 while (matcher.find()) {
-                    String string = word[j].replaceAll("[^A-Za-zА-Яа-я]", "");
-                    abbreviationInText.add(string);
+                    String string = s.replaceAll("[^A-Za-zА-Яа-я]", "");
+                    OmoFormList list = jMorfSdk.getAllCharacteristicsOfForm(string.toLowerCase());
+                    if (!list.isEmpty() && list.stream().anyMatch(form -> (form.getAllMorfCharacteristics() & IDENTIFIER) == ABBREVIATION)) {
+                        abbreviationInText.add(string);
+                    }
                 }
             }
         }
-
         return abbreviationInText;
     }
 
     private static List<String> getContent(Section section) {
         List<String> content = new ArrayList<>(section.getContent());
-
         if (!section.getSubheadersList().isEmpty()) {
             for (int i = 0; i < section.getSubheadersList().size(); i++) {
                 List<String> text = getContent(section.getSubheadersList().get(i));
@@ -135,57 +61,4 @@ public class AbbreviationValidator {
         }
         return content;
     }
-
-    private static Set<String> validateGr(List<XWPFParagraph> text, List<AbbreviationAndText> abbreviation) {
-        Set<String> error = new HashSet<>();
-
-        List<String> abbrs = new ArrayList<>();
-        abbreviation.forEach(abbr -> {
-            abbrs.addAll(abbr.getAbbreviation());
-        });
-        for (XWPFParagraph paragraph : text) {
-            for (String word : paragraph.getText().split(" ")) {
-                Pattern pattern = Pattern.compile("([А-Я]{2,})");
-                Matcher matcher = pattern.matcher(word);
-                while (matcher.find()) {
-                    if (!abbrs.contains(matcher.group(0))) {
-                        error.add(word);
-                    }
-                }
-            }
-        }
-        return error;
-    }
-
-    private static Set<String> validateMorf(List<XWPFParagraph> text, List<AbbreviationAndText> abbreviation) {
-        Set<String> error = new HashSet<>();
-
-        List<String> abbrs = new ArrayList<>();
-        abbreviation.forEach(abbr -> {
-            abbrs.addAll(abbr.getAbbreviation());
-        });
-        for (XWPFParagraph paragraph : text) {
-            if (!paragraph.getText().trim().isEmpty()) {
-                try {
-                    for (String word : Parser.parserBasicsPhase(paragraph.getText())) {
-                        Pattern pattern = Pattern.compile("([А-Я]{2,})");
-                        Matcher matcher = pattern.matcher(word);
-                        while (matcher.find()) {
-                            if (!abbrs.contains(matcher.group(0))) {
-                                OmoFormList list = jMorfSdk.getAllCharacteristicsOfForm(word.toLowerCase());
-                                if (list.isEmpty()
-                                        || list.stream().anyMatch(form -> (form.getAllMorfCharacteristics() & IDENTIFIER) == ABBREVIATION)) {
-                                    error.add(word);
-                                }
-                            }
-                        }
-                    }
-                } catch (RuntimeException ex) {
-
-                }
-            }
-        }
-        return error;
-    }
-
 }
