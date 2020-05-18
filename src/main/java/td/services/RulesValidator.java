@@ -4,6 +4,8 @@ import methodOfSummarizationAndElementsOfText.MethodsOfSummarizationAndElementsO
 import ru.library.text.word.Word;
 import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
 import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
+import ru.textanalysis.tawt.ms.storage.OmoFormList;
+import ru.textanalysis.tawt.ms.internal.IOmoForm;
 import td.domain.Section;
 import td.domain.Term;
 import td.domain.WordDocument;
@@ -77,9 +79,9 @@ public class RulesValidator {
                                 if (stringEntry.getKey().equals("titleContains")) {
                                     String title = document.getSections().get(i).getTitle().trim();
                                     String value = stringEntry.getValue().trim();
-                                    String report = validateTitleContains(title, value);
+                                    List<String> report = checkWordInclusion(title, value, title);
                                     if (!report.isEmpty()) {
-                                        errors.add(report);
+                                        errors.addAll(report);
                                     }
                                 }
 
@@ -90,10 +92,11 @@ public class RulesValidator {
                                         String title = document.getSections().get(i).getSubheadersList().get(lastSection).getTitle().trim();
                                         String value = stringEntry.getValue().trim();
                                         String sectionTitle = document.getSections().get(i).getTitle();
-                                        String report = validateTitleContains(title, value);
+                                        List<String> report = checkWordInclusion(title, value, title);
                                         if (!report.isEmpty()) {
-                                            errors.add(String.format("\nНеверный последний заголовок раздела: '%s'. %s",
-                                                    sectionTitle, report));
+                                            errors.add(String.format("\nНеверный последний заголовок раздела: '%s'.",
+                                                    sectionTitle));
+                                            errors.addAll(report);
                                         }
                                     }
                                 }
@@ -152,7 +155,9 @@ public class RulesValidator {
 
             //проверка пересечения ключевых слов разделов
             if (entry.getKey().equals("keywordIntersection")) {
-                errors.addAll(validateKeywordsBySections());
+                if(Boolean.parseBoolean(entry.getValue())) {
+                    errors.addAll(validateKeywordsBySections());
+                }
             }
 
             //поиск ключевых слов в документе
@@ -287,29 +292,21 @@ public class RulesValidator {
     }
 
     private List<String> checkWordInclusion(String content, String value, String title) {
-        String[] contentWordRaw = content.split(" ");
+
+        //выделение слов из текста раздела
+        List<String> contentWordsRaw = new ArrayList<>(Arrays.asList(content.split(" ")));
         Set<String> contentWordSet = new HashSet<>();
-        for (String string : contentWordRaw) {
+        for (String string : contentWordsRaw) {
             contentWordSet.add(string.replaceAll("[^A-Za-zА-Яа-я]", ""));
         }
-        Set<String> initialContentWord = new HashSet<>();
-        for (String string : contentWordSet) {
-            List<String> wordForms = jMorfSdk.getStringInitialForm(string);
-            if (!wordForms.isEmpty()) {
-                initialContentWord.add(wordForms.get(0));
-            }
-        }
+        Set<String> initialContentWord = getInitialForm(contentWordSet);
 
-        String[] words = value.split(" ");
-        Set<String> initialUserWords = new HashSet<>();
-        for (String string : words) {
-            List<String> wordForms = jMorfSdk.getStringInitialForm(string);
-            if (!wordForms.isEmpty()) {
-                initialUserWords.add(wordForms.get(0));
-            }
-        }
+        //обработка слов, которые нужно найти
+        Set<String> userWords = new HashSet<>(Arrays.asList(value.split(" ")));
+        Set<String> initialUserWords = getInitialForm(userWords);
 
-        List<String> foundWords = new ArrayList<>();
+        //поиск вхождений необхимых слов из списка слов раздела
+        Set<String> foundWords = new HashSet<>();
         for (String userWord : initialUserWords) {
             for (String contentWord : initialContentWord) {
                 if (userWord.equals(contentWord)) {
@@ -318,33 +315,18 @@ public class RulesValidator {
             }
         }
 
+        //составление отчета
         List<String> report = new ArrayList<>();
         if (!foundWords.isEmpty()) {
             float percent = (float) 100 * foundWords.size() / initialUserWords.size();
-            report.add(String.format("\nВ разделе '%s' найдено %.2f%% заданных слов:", title, percent));
-            report.addAll(foundWords);
+            if (percent / 100 != 1) {
+                report.add(String.format("\nВ разделе '%s' найдено %.2f%% заданных слов:", title, percent));
+                report.addAll(foundWords);
+            }
         } else {
-            report.add(String.format("\nВ разделе '%s' заданные слова не найдены.", title));
+            report.add(String.format("В разделе '%s' заданные слова не найдены.", title));
         }
         return report;
-    }
-
-    private String validateTitleContains(String title, String value) {
-        String valueInitialForm = jMorfSdk.getStringInitialForm(value.toLowerCase()).get(0);
-        boolean hasUppercase = value.equals(value.toUpperCase());
-        String report = "";
-        if (hasUppercase) {
-            if (!title.contains(valueInitialForm.toUpperCase())) {
-                report = String.format("\nОжидалось, что в заголовке '%s' встретится: '%s'.", title, valueInitialForm.toUpperCase());
-            }
-            return report;
-        } else {
-            String titleLowerCase = title.toLowerCase();
-            if (!titleLowerCase.contains(valueInitialForm)) {
-                report = String.format("\nОжидалось, что в заголовке '%s' встретится: '%s'.", title, valueInitialForm);
-            }
-            return report;
-        }
     }
 
     private List<String> validateKeywordsBySections() {
@@ -438,5 +420,23 @@ public class RulesValidator {
             report.add("Не найдено общих ключевых слов.");
         }
         return report;
+    }
+
+    private Set<String> getInitialForm(Set<String> words) {
+        Set<String> initialForms = new HashSet<>();
+        for (String string : words) {
+            List<String> wordForms = jMorfSdk.getStringInitialForm(string.toLowerCase());
+            if (!wordForms.isEmpty()) {
+                for (String s : wordForms) {
+                    OmoFormList omoForms = jMorfSdk.getAllCharacteristicsOfForm(s);
+                    for (IOmoForm omoForm : omoForms) {
+                        if (omoForm.getTypeOfSpeech() == 17) {
+                            initialForms.add(omoForm.getInitialFormString());
+                        }
+                    }
+                }
+            }
+        }
+        return  initialForms;
     }
 }
