@@ -1,13 +1,7 @@
 package td.services;
 
-import com.sun.org.apache.bcel.internal.generic.SIPUSH;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Translator {
-    private static String dictionary = "src/main/resources/dictionaries/dictionary.txt";
+    private static String dictionary = "libs/dictionary.txt";
     private Map<String, String> words;
     private Logger log = Logger.getLogger(getClass().getName());
 

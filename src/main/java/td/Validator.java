@@ -17,10 +17,10 @@ public class Validator {
     private Logger log = Logger.getLogger(getClass().getName());
     private WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
     private XmlFileCreator xmlCreator = new XmlFileCreator();
-    private static final String XML_FILE = "templates/generatedXml.xml";
-    private static final String FULL_VKRB_SCHEMA = "templates/VKRB.xsd";
-    private static final String GOST34_602_89 = "templates/GOST34_602_89.xsd";
-    private static final String RD_50_34_698_90 = "templates/RD_50_34_698_90.xsd";
+    private static final String XML_FILE = "libs/xml/generatedXml.xml";
+    private static final String FULL_VKRB_SCHEMA = "libs/xsd/VKRB.xsd";
+    private static final String GOST34_602_89 = "libs/xsd/GOST34_602_89.xsd";
+    private static final String RD_50_34_698_90 = "libs/xsd/RD_50_34_698_90.xsd";
 
     private List<String> report = new ArrayList<>();
 
@@ -36,9 +36,6 @@ public class Validator {
         }
         WordDocument document = validateDocModel(docPath);
         if (!document.getSections().isEmpty()) {
-            System.out.println(document.getSections().get(0).getContent());
-            for (int i = 0; i < document.getSections().size(); i++) {
-            }
             if (validateXml(schema)) {
                 if (validateRules(Paths.get(schema), document, userGeneralRules, userSectionRules)) {
                     log.log(Level.INFO, "Validation - true!");

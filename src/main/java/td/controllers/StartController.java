@@ -72,9 +72,9 @@ public class StartController extends Window {
         rulesScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         rulesScrollPane.setContent(container);
 
-        schemas.put("ВКРБ", "templates/VKRB.xsd");
-        schemas.put("Техническое задание", "templates/GOST34_602_89.xsd");
-        schemas.put("Руководство пользователя", "templates/RD_50_34_698_90.xsd");
+        schemas.put("ВКРБ", "libs/xsd/VKRB.xsd");
+        schemas.put("Техническое задание", "libs/xsd/GOST34_602_89.xsd");
+        schemas.put("Руководство пользователя", "libs/xsd/RD_50_34_698_90.xsd");
 
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
             documentTypeList.add(entry.getKey());
