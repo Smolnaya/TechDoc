@@ -31,12 +31,6 @@ import java.util.logging.Logger;
 public class StartController extends Window {
 
     @FXML
-    private Button validateButton;
-
-    @FXML
-    private Button reportButton;
-
-    @FXML
     private Label fileNameLabel;
 
     @FXML
@@ -47,9 +41,6 @@ public class StartController extends Window {
 
     @FXML
     private TextArea reportTextArea;
-
-//    @FXML
-//    private ChoiceBox<String> documentTypeChoiceBox;
 
     @FXML
     private ComboBox<String> documentTypeComboBox;

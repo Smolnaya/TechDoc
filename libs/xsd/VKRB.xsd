@@ -36,6 +36,9 @@
         <xs:complexType>
             <xs:sequence>
 
+                <!--СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ-->
+                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations" mc:generalRules="false"/>
+
                 <!--ВВЕДЕНИЕ-->
                 <xs:element ref="section" mc:kind="intro" mc:generalRules="true"/>
 
@@ -44,9 +47,6 @@
 
                 <!--ЗАКЛЮЧЕНИЕ-->
                 <xs:element ref="section" mc:kind="conclusion" mc:generalRules="true"/>
-
-                <!--СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ-->
-                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations" mc:generalRules="false"/>
 
                 <!--СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ-->
                 <xs:element ref="section" mc:kind="literature" mc:generalRules="false"/>

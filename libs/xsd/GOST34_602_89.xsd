@@ -42,34 +42,24 @@
         <xs:complexType>
             <xs:sequence>
 
-                <!--1. ОБЩИЕ СВЕДЕНИЯ-->
                 <xs:element ref="section" mc:kind="generalInformation" mc:generalRules="true"/>
 
-                <!--2. НАЗНАЧЕНИЕ И ЦЕЛИ СОЗДАНИЯ (РАЗВИТИЯ) СИСТЕМЫ-->
                 <xs:element ref="section" mc:kind="appointmentAndPurposes" mc:generalRules="true"/>
 
-                <!--3. ХАРАКТЕРИСТИКА ОБЪЕКТОВ АВТОМАТИЗАЦИИ-->
                 <xs:element ref="section" mc:kind="objectsAutomationCharacteristics" mc:generalRules="true"/>
 
-                <!--4. ТРЕБОВАНИЯ К СИСТЕМЕ-->
                 <xs:element ref="section" mc:kind="systemRequirements" mc:generalRules="true"/>
 
-                <!--5. СОСТАВ И СОДЕРЖАНИЕ РАБОТ ПО СОЗДАНИЮ СИСТЕМЫ-->
                 <xs:element ref="section" mc:kind="worksCompositionAndContent" mc:generalRules="true"/>
 
-                <!--6. ПОРЯДОК КОНТРОЛЯ И ПРИЕМКИ СИСТЕМЫ-->
                 <xs:element ref="section" mc:kind="systemControlAndAcceptance" mc:generalRules="true"/>
 
-                <!--7. ТРЕБОВАНИЯ К СОСТАВУ И СОДЕРЖАНИЮ РАБОТ ПО ПОДГОТОВКЕ ОБЪЕКТА АВТОМАТИЗАЦИИ К ВВОДУ СИСТЕМЫ В ДЕЙСТВИЕ-->
                 <xs:element ref="section" mc:kind="requirementsEnterSystem" mc:generalRules="true"/>
 
-                <!--8. ТРЕБОВАНИЯ К ДОКУМЕНТИРОВАНИЮ-->
                 <xs:element ref="section" mc:kind="documentationRequirements" mc:generalRules="true"/>
 
-                <!--9. ИСТОЧНИКИ РАЗРАБОТКИ-->
                 <xs:element ref="section" mc:kind="developmentSources" mc:generalRules="true"/>
 
-                <!--ПРИЛОЖЕНИЯ-->
                 <xs:element ref="section" mc:kind="appendices" mc:generalRules="false" minOccurs="0" maxOccurs="10"/>
 
             </xs:sequence>

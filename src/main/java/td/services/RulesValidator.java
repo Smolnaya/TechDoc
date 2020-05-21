@@ -249,11 +249,10 @@ public class RulesValidator {
                 if (!termList.isEmpty()) {
                     List<String> foundAbbreviationList = new ArrayList<>();
                     foundAbbreviationList.add("Найденные совпадения: ");
-                    for(String abbrInText : abbreviationInText) {
-                        for(Term term : termList) {
-                            if (abbrInText.equals(term.getTerm())) {
-                                foundAbbreviationList.add(term.getTerm());
-
+                    for(Term term : termList) {
+                        for(String abbrInText : abbreviationInText) {
+                            if (term.getTerm().equals(abbrInText)) {
+                                foundAbbreviationList.add(abbrInText);
                             }
                         }
                     }

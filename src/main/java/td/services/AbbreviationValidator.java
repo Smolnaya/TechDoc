@@ -19,9 +19,13 @@ public class AbbreviationValidator {
     public static List<Term> getTermList(Section document) {
         List<String> contentList = document.getContent();
         List<Term> termList = new ArrayList<>();
-        for (String s : contentList) {
-            String[] term = s.trim().split(" – ");
-            termList.add(new Term(term[0], term[1]));
+        if (!contentList.isEmpty()) {
+            for (String s : contentList) {
+                if (!s.trim().isEmpty()) {
+                    String[] line = s.trim().split("–");
+                    termList.add(new Term(line[0].trim(), line[1].trim()));
+                }
+            }
         }
         return termList;
     }
