@@ -24,12 +24,12 @@
     <xs:element name="document" mc:kind="document">
         <xs:annotation>
             <xs:appinfo>
-                document rules: validateAbbreviation=false, validateKeyWords=false, keywordIntersection=true, keyWords=задача документация технический правило;
+                document rules: validateAbbreviation=false, validateKeyWords=false, keywordIntersection=false, keyWords=задача документация технический правило;
                 intro rules: title=ВВЕДЕНИЕ, subsectionQuantity=0, generalRules=true, wordsInclusion=цель задача актуальность, getKeyWords=false;
                 conclusion rules: title=ЗАКЛЮЧЕНИЕ, subsectionQuantity=0, generalRules=true, getKeyWords=false;
                 literature rules: title=СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ, subsectionQuantity=0;
                 chapter rules: titleContains=ГЛАВА, lastSubsectionTitle=выводы, minSubsectionQuantity=3, generalRules=true, getKeyWords=false;
-                listOfTermsAndAbbreviations rules: title=СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ
+                listOfTermsAndAbbreviations rules: title=СПИСОК ОСНОВНЫХ ТЕРМИНОВ И СОКРАЩЕНИЙ
             </xs:appinfo>
         </xs:annotation>
 
@@ -37,22 +37,22 @@
             <xs:sequence>
 
                 <!--СПИСОК ТЕРМИНОВ И СОКРАЩЕНИЙ-->
-                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations" mc:generalRules="false"/>
+                <xs:element ref="section" mc:kind="listOfTermsAndAbbreviations"/>
 
                 <!--ВВЕДЕНИЕ-->
-                <xs:element ref="section" mc:kind="intro" mc:generalRules="true"/>
+                <xs:element ref="section" mc:kind="intro"/>
 
                 <!--ГЛАВЫ-->
-                <xs:element ref="section" mc:kind="chapter" mc:generalRules="true" minOccurs="3" maxOccurs="3"/>
+                <xs:element ref="section" mc:kind="chapter" minOccurs="3" maxOccurs="3"/>
 
                 <!--ЗАКЛЮЧЕНИЕ-->
-                <xs:element ref="section" mc:kind="conclusion" mc:generalRules="true"/>
+                <xs:element ref="section" mc:kind="conclusion"/>
 
                 <!--СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ-->
-                <xs:element ref="section" mc:kind="literature" mc:generalRules="false"/>
+                <xs:element ref="section" mc:kind="literature"/>
 
                 <!--ПРИЛОЖЕНИЯ-->
-                <xs:element ref="section" mc:kind="appendices" mc:generalRules="false" minOccurs="0" maxOccurs="10"/>
+                <xs:element ref="section" mc:kind="appendices" minOccurs="0" maxOccurs="10"/>
 
             </xs:sequence>
             <xs:attribute name="level" type="levelType"/>

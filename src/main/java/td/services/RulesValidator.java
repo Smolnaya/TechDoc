@@ -170,7 +170,7 @@ public class RulesValidator {
 
             //проверка ключевых слов
             if (entry.getKey().equals("validateKeyWords")) {
-                if (Boolean.parseBoolean(entry.getValue())) {
+                if (Boolean.parseBoolean(entry.getValue()) && !xsdKeyWords.isEmpty()) {
                     getDocumentKeyWords();
 
                     //поиск общий слов
