@@ -2,6 +2,10 @@
     -fx-background-color: #e7f5dc;
 }
 
+.progress-indicator {
+    -fx-progress-color: #64ac8f;
+}
+
 .combo-box {
     -fx-background-color: linear-gradient(to top, #6fbfa1, #a5eed2);
     -fx-background-radius: 30px;

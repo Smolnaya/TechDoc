@@ -14,8 +14,6 @@ import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyP
 import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyParameters.Name.IDENTIFIER;
 
 public class AbbreviationValidator {
-    private static JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
-
     public static List<Term> getTermList(Section document) {
         List<String> contentList = document.getContent();
         List<Term> termList = new ArrayList<>();
@@ -45,7 +43,7 @@ public class AbbreviationValidator {
                 Matcher matcher = pattern.matcher(s);
                 while (matcher.find()) {
                     String string = s.replaceAll("[^A-Za-zА-Яа-я]", "");
-                    OmoFormList list = jMorfSdk.getAllCharacteristicsOfForm(string.toLowerCase());
+                    OmoFormList list = JMorfSdkManager.getjMorfSdk().getAllCharacteristicsOfForm(string.toLowerCase());
                     if (!list.isEmpty() && list.stream().anyMatch(form -> (form.getAllMorfCharacteristics() & IDENTIFIER) == ABBREVIATION)) {
                         abbreviationInText.add(string);
                     }

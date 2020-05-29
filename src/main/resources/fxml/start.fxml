@@ -8,7 +8,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="1000.0" stylesheets="@../css/start.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="td.controllers.StartController">
+<AnchorPane fx:id="anchorPane"
+            prefHeight="600.0"
+            prefWidth="1000.0"
+            stylesheets="@../css/start.css"
+            xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="td.controllers.StartController">
     <children>
         <ScrollPane fx:id="rulesScrollPane" layoutX="30.0" layoutY="230.0" pannable="true" prefHeight="360.0" prefWidth="370.0" AnchorPane.bottomAnchor="105.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="135.0">
             <content>

@@ -20,7 +20,6 @@ public class RulesValidator {
     private List<String> xsdKeyWords;
     private HashSet<String> commonWords;
     private WordDocument document;
-    private static JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
 
     public RulesValidator(WordDocument document, Path schema, Map<String, String> userGeneralRules) {
         XmlRulesGetter xmlRules = new XmlRulesGetter();
@@ -417,10 +416,10 @@ public class RulesValidator {
     private Set<String> getInitialForm(Set<String> words) {
         Set<String> initialForms = new HashSet<>();
         for (String string : words) {
-            List<String> wordForms = jMorfSdk.getStringInitialForm(string.toLowerCase());
+            List<String> wordForms = JMorfSdkManager.getjMorfSdk().getStringInitialForm(string.toLowerCase());
             if (!wordForms.isEmpty()) {
                 for (String s : wordForms) {
-                    OmoFormList omoForms = jMorfSdk.getAllCharacteristicsOfForm(s);
+                    OmoFormList omoForms = JMorfSdkManager.getjMorfSdk().getAllCharacteristicsOfForm(s);
                     for (IOmoForm omoForm : omoForms) {
                         if (omoForm.getTypeOfSpeech() == 17) {
                             initialForms.add(omoForm.getInitialFormString());
