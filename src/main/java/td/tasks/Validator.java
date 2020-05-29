@@ -1,4 +1,4 @@
-package td;
+package td.tasks;
 
 import org.xml.sax.SAXException;
 import td.domain.WordDocument;

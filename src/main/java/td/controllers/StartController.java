@@ -4,7 +4,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 
 import javafx.scene.Node;
@@ -15,9 +17,9 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import td.Validator;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
+import td.tasks.ValidationTask;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -34,6 +36,15 @@ public class StartController extends Window {
     private Label fileNameLabel;
 
     @FXML
+    private Button fileButton;
+
+    @FXML
+    private Button validateButton;
+
+    @FXML
+    private Button reportButton;
+
+    @FXML
     private Label genRulesLabel = new Label("Правила для документа");
 
     @FXML
@@ -47,6 +58,12 @@ public class StartController extends Window {
 
     @FXML
     ScrollPane rulesScrollPane;
+
+    @FXML
+    private Label progressLabel;
+
+    @FXML
+    private ProgressIndicator progressIndicator;
 
     private File docFile;
     private ObservableList<String> documentTypeList = FXCollections.observableArrayList();
@@ -238,13 +255,33 @@ public class StartController extends Window {
         if (docFile != null) {
             getRules();
             reportTextArea.clear();
-            Validator validator = new Validator();
-            List<String> report = validator.validate(documentTypeComboBox.getValue(), docFile.toPath(),
-                    generalRules, sectionRules);
-            for (int i = 0; i < report.size(); i++) {
-                reportTextArea.appendText(report.get(i) + "\n");
-            }
+            setBlock(true);
+
+            ValidationTask task = new ValidationTask(documentTypeComboBox.getValue(), docFile.toPath(),
+                                                    generalRules, sectionRules);
+            task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+                    new EventHandler<WorkerStateEvent>() {
+                        @Override
+                        public void handle(WorkerStateEvent t) {
+                            List<String> report = task.getValue();
+                            for (String s : report) {
+                                reportTextArea.appendText(s + "\n");
+                            }
+                            setBlock(false);
+                        }
+                    });
+            new Thread(task).start();
         }
+    }
+
+    private void setBlock(Boolean value) {
+        progressLabel.setVisible(value);
+        progressIndicator.setVisible(value);
+        fileButton.setDisable(value);
+        documentTypeComboBox.setDisable(value);
+        rulesScrollPane.setDisable(value);
+        validateButton.setDisable(value);
+        reportButton.setDisable(value);
     }
 
     @FXML
