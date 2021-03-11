@@ -1,5 +1,7 @@
 package td.controllers;
 
+import database.DbSql;
+import database.models.Template;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -9,14 +11,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
+import javafx.stage.*;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
 import td.tasks.ValidationTask;
@@ -45,6 +49,12 @@ public class StartController extends Window {
     private Button reportButton;
 
     @FXML
+    private Button templateButton;
+
+    @FXML
+    private Button styleButton;
+
+    @FXML
     private Label genRulesLabel = new Label("Правила для документа");
 
     @FXML
@@ -57,6 +67,9 @@ public class StartController extends Window {
     private ComboBox<String> documentTypeComboBox;
 
     @FXML
+    private ComboBox<String> stylesComboBox;
+
+    @FXML
     ScrollPane rulesScrollPane;
 
     @FXML
@@ -66,6 +79,7 @@ public class StartController extends Window {
     private ProgressIndicator progressIndicator;
 
     private File docFile;
+    private final DbSql dbSql = new DbSql();
     private ObservableList<String> documentTypeList = FXCollections.observableArrayList();
     private Map<String, String> schemas = new HashMap<>();
     private Map<String, Map<String, String>> sectionRules = new HashMap<>();
@@ -79,12 +93,30 @@ public class StartController extends Window {
 
     @FXML
     public void initialize() {
-        schemas.put("ВКРБ", "libs/xsd/VKRB.xsd");
-        schemas.put("Техническое задание", "libs/xsd/GOST34_602_89.xsd");
-        schemas.put("Руководство пользователя", "libs/xsd/RD_50_34_698_90.xsd");
+        List<Template> templateList = dbSql.selectTemplates();
+//        List<String> styleNameList = new ArrayList<>();
+        ObservableList<String> styleNameList = FXCollections.observableArrayList();
+        if (templateList != null) {
+            for (Template t : templateList) {
+                styleNameList.add(t.getStyleName());
+                schemas.put(t.getTempName(), t.getTempPath());
+            }
+        }
+//        File dir = new File("libs/xsd/");
+//        File[] arrFiles = dir.listFiles();
+//        if (arrFiles != null) {
+//            for (File file : arrFiles) {
+//                String fullName = file.getName();
+//                String fileName = fullName.substring(0, fullName.lastIndexOf("."));
+//                schemas.put(fileName, file.getPath());
+//            }
+//        }
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
             documentTypeList.add(entry.getKey());
         }
+
+        stylesComboBox.setItems(styleNameList);
+        stylesComboBox.getSelectionModel().select(0);
 
         documentTypeComboBox.setItems(documentTypeList);
         documentTypeComboBox.getSelectionModel().select(0);
@@ -297,5 +329,40 @@ public class StartController extends Window {
                 }
             }
         }
+    }
+
+    @FXML
+    void clickTemplateButton() {
+        log.log(Level.INFO, "Открывается окно Шаблоны");
+        Stage stage = new Stage();
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/fxml/template.fxml"));
+            stage.setTitle("Шаблоны");
+            openNewWindow(stage, root, templateButton);
+        } catch (IOException ex) {
+            log.log(Level.WARNING, ex.getMessage());
+        }
+    }
+
+    @FXML
+    void clickStyleButton() {
+        log.log(Level.INFO, "Открывается окно Стили");
+        Stage stage = new Stage();
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/fxml/styleEditor.fxml"));
+            stage.setTitle("Стили");
+            openNewWindow(stage, root, styleButton);
+        } catch (IOException ex) {
+            log.log(Level.WARNING, ex.getMessage());
+        }
+    }
+
+    private void openNewWindow(Stage stage, Parent root, Button templateButton) {
+        stage.getIcons().add(new Image("/images/clip.png"));
+        stage.setScene(new Scene(root, 960, 600));
+        stage.setResizable(false);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(templateButton.getScene().getWindow());
+        stage.show();
     }
 }

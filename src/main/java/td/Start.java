@@ -15,8 +15,8 @@ public class Start extends Application {
 //        MethodsOfSummarizationAndElementsOfText ms = new MethodsOfSummarizationAndElementsOfText();
 //        ms.getKeyWords("слово");
 //        JMorfSdk jMorfSdk = JMorfSdkFactory.loadFullLibrary();
-//        launch(args);
-        LauncherImpl.launchApplication(Start.class, JavaFXPreloader.class, args);
+        launch(args);
+//        LauncherImpl.launchApplication(Start.class, JavaFXPreloader.class, args);
     }
 
     @Override
