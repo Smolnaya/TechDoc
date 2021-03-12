@@ -155,6 +155,10 @@ public class DbSql {
         }
     }
 
+    /**
+     * Выборка всех шаблонов в БД (id, name, path, style_name)
+     * @return List<Template>
+     */
     public List<Template> selectTemplates() {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
             String query = "select templates.temp_id, templates.temp_name, " +
@@ -175,6 +179,48 @@ public class DbSql {
             } else return new ArrayList<>();
         } catch (SQLException ex) {
             log.log(Level.WARNING, "Не удалось выполнить 'selectTemplates()'", ex);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Выборка  всех названий отступов в БД
+     * @return List<String>
+     */
+    public List<String> selectAlignments() {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "select * from alignment;";
+            ResultSet rs = conn.createStatement().executeQuery(query);
+            List<String> alignList = new ArrayList<>();
+            if (rs.next()) {
+                do {
+                    alignList.add(rs.getString(2));
+                } while (rs.next());
+                return alignList;
+            } else return new ArrayList<>();
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'selectAlignments()'", ex);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Выборка всех названий шрифтов в БД
+     * @return List<String>
+     */
+    public List<String> selectFontNames() {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "select * from font_names;";
+            ResultSet rs = conn.createStatement().executeQuery(query);
+            List<String> fontNameList = new ArrayList<>();
+            if (rs.next()) {
+                do {
+                    fontNameList.add(rs.getString(2));
+                } while (rs.next());
+                return fontNameList;
+            } else return new ArrayList<>();
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'selectFontNames()'", ex);
             return new ArrayList<>();
         }
     }
