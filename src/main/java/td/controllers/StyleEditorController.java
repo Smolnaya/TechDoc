@@ -1,7 +1,10 @@
 package td.controllers;
 
+
+import database.DbService;
 import database.DbSql;
-import database.models.Style;
+import database.models.ParagraphRule;
+import database.models.TextRangeRule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,88 +12,91 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class StyleEditorController extends Window {
+    @FXML
+    private Label xsdNameLabel;
 
     @FXML
-    private ComboBox<String> stylesComboBox;
+    private ComboBox<String> styleListCB;
 
     @FXML
-    private ComboBox<String> fontNamesComboBox;
+    private ComboBox<String> alignCB;
 
     @FXML
-    private TextArea sizeTextArea;
+    private TextField lineSpaceTF;
 
     @FXML
-    private CheckBox boldCheckBox;
+    private TextField indentTF;
 
     @FXML
-    private CheckBox italicCheckBox;
+    private CheckBox boldCheck;
 
     @FXML
-    private CheckBox capsCheckBox;
+    private ComboBox<String> fontNameCB;
+
+    @FXML
+    private TextField sizeTF;
 
     @FXML
     private ColorPicker colorPicker;
 
     @FXML
-    private ComboBox<String> alignmentComboBox;
+    private CheckBox italicCheck;
 
     @FXML
-    private TextArea indentTextArea;
+    private CheckBox capsCheck;
 
     @FXML
-    private TextArea lineSpaceTextArea;
+    private Button acceptButton;
 
+    private String xsdPath;
+    private int tempID;
+    private String tempName;
+    private List<Integer> styleIdList = new ArrayList<>();
+    private final ObservableList<String> styleList = FXCollections.observableArrayList();
+    private final ObservableList<String> alignList = FXCollections.observableArrayList();
+    private final ObservableList<String> fontList = FXCollections.observableArrayList();
+    private final Logger log = Logger.getLogger(getClass().getName());
     private final DbSql dbSql = new DbSql();
 
-    @FXML
     public void initialize() {
-        ObservableList<String> fontNameList = FXCollections.observableArrayList();
-        fontNameList.addAll(dbSql.selectFontNames());
-        fontNamesComboBox.setItems(fontNameList);
-
-        ObservableList<String> alignmentList = FXCollections.observableArrayList();
-        alignmentList.addAll(dbSql.selectAlignments());
-        alignmentComboBox.setItems(alignmentList);
-
-        List<Style> styleList = dbSql.selectStyles();
-        ObservableList<String> styleNameList = FXCollections.observableArrayList();
-        if (styleList != null) {
-            for (Style style : styleList) {
-                styleNameList.add(style.getStyleName());
-            }
-        }
-        stylesComboBox.setItems(styleNameList);
-        stylesComboBox.getSelectionModel().select(0);
-
-        assert styleList != null;
-        chooseStyle(stylesComboBox.getValue(), styleList);
-        stylesComboBox.setOnAction(event -> chooseStyle(stylesComboBox.getValue(), styleList));
+        xsdNameLabel.setText(tempName);
+        styleListCB.setItems(styleList);
+        alignCB.setItems(alignList);
+        fontNameCB.setItems(fontList);
+        styleListCB.getSelectionModel().selectFirst();
+//        fill();
+        styleListCB.setOnAction(event -> fill());
     }
 
-    @FXML
-    public void chooseStyle(String currentStyleName, List<Style> styleList) {
-        for (Style style : styleList) {
-            if (style.getStyleName().equals(currentStyleName)) {
-                fontNamesComboBox.setValue(style.getFontName());
-                sizeTextArea.setText(String.valueOf(style.getFontSize()));
-                boldCheckBox.setSelected(style.getBold());
-                italicCheckBox.setSelected(style.getItalic());
-                capsCheckBox.setSelected(style.getAllCaps());
-                colorPicker.setValue(Color.web(style.getTextColor()));
-                alignmentComboBox.setValue(style.getAlignment());
-                indentTextArea.setText(String.valueOf(style.getIndent()));
-                lineSpaceTextArea.setText(String.valueOf(style.getLineSpace()));
-            }
-        }
+    public void initData(String path) {
+        xsdPath = path;
+        tempID = dbSql.getTempID(xsdPath);
+        tempName = dbSql.getTempName(xsdPath);
+        styleIdList = dbSql.getTempStylesID(tempID);
+        styleList.addAll(dbSql.getTempStyles(tempID));
+        alignList.addAll(dbSql.getAlignments());
+        fontList.addAll(dbSql.getFontNames());
     }
 
-    @FXML
-    public void clickApplyButton() {
-        Color color = colorPicker.getValue();
-        System.out.println(color);
+    private void fill() {
+        int curStyleID = dbSql.getStyleID(styleListCB.getValue());
+        ParagraphRule pr = dbSql.getParaRule(curStyleID);
+        TextRangeRule tr = dbSql.getTRRule(curStyleID);
+        alignCB.getSelectionModel().select(pr.getAlignName());
+        indentTF.setText(String.valueOf(pr.getParagraphIndent()));
+        lineSpaceTF.setText(String.valueOf(pr.getLineSpace()));
+        boldCheck.setSelected(tr.getTextBold());
+        fontNameCB.getSelectionModel().select(tr.getFontName());
+        sizeTF.setText(String.valueOf(tr.getFontSize()));
+        colorPicker.setValue(Color.valueOf(tr.getTextColor()));
+        italicCheck.setSelected(tr.getTextItalic());
+        capsCheck.setSelected((tr.getTextCap()));
     }
-
 }

@@ -35,6 +35,84 @@ public class DbSql {
         }
     }
 
+    // выбрать стиль id по имени
+    public int getStyleID(String name) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT style_id FROM styles WHERE style_name = '%s'";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, name));
+            if (rs.next()) {
+                return rs.getInt("style_id");
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getStyleID()', пустой ответ.");
+                return -1;
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getStyleID()'", ex);
+            return -1;
+        }
+    }
+
+    // выбрать имя шаблона по пути
+    public String getTempName(String path) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT temp_name FROM templates WHERE temp_path = '%s'";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, path));
+            if (rs.next()) {
+                return rs.getString("temp_name");
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getTempName()', пустой ответ.");
+                return "";
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getTempName()'", ex);
+            return "";
+        }
+    }
+
+    // выбрать список id стилей шаблона по id
+    public List<Integer> getTempStylesID(int tempID) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT elements.elem_style_id FROM elements WHERE elements.elem_temp_id == %s;";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, tempID));
+            List<Integer> idList = new ArrayList<>();
+            if (rs.next()) {
+                do {
+                    idList.add(rs.getInt("elem_style_id"));
+                } while (rs.next());
+                return idList;
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getTempStylesID()', пустой ответ.");
+                return new ArrayList<>();
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getTempStylesID()'", ex);
+            return new ArrayList<>();
+        }
+    }
+
+    // выбрать список имен стилей шаблона по id шаблона
+    public List<String> getTempStyles(int tempID) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT styles.style_name " +
+                    "FROM elements JOIN styles ON elements.elem_style_id = styles.style_id " +
+                    "WHERE elements.elem_temp_id = %s;";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, tempID));
+            List<String> styleNameList = new ArrayList<>();
+            if (rs.next()) {
+                do {
+                    styleNameList.add(rs.getString("style_name"));
+                } while (rs.next());
+                return styleNameList;
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getTempName()', пустой ответ.");
+                return new ArrayList<>();
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getTempName()'", ex);
+            return new ArrayList<>();
+        }
+    }
+
     // выбрать настройки TR по id стиля
     public TextRangeRule getTRRule(int styleID) {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
@@ -282,7 +360,7 @@ public class DbSql {
      *
      * @return List<String>
      */
-    public List<String> selectAlignments() {
+    public List<String> getAlignments() {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
             String query = "select * from alignment;";
             ResultSet rs = conn.createStatement().executeQuery(query);
@@ -304,7 +382,7 @@ public class DbSql {
      *
      * @return List<String>
      */
-    public List<String> selectFontNames() {
+    public List<String> getFontNames() {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
             String query = "select * from font_names;";
             ResultSet rs = conn.createStatement().executeQuery(query);

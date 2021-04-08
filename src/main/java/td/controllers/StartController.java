@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.*;
-import td.services.FontValidator;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
 import td.tasks.FontValidationTask;
@@ -63,7 +62,7 @@ public class StartController extends Window {
     private Button styleButton;
 
     @FXML
-    private Label genRulesLabel = new Label("Правила для документа");
+    private final Label genRulesLabel = new Label("Правила для документа");
 
     @FXML
     private VBox container;
@@ -73,9 +72,6 @@ public class StartController extends Window {
 
     @FXML
     private ComboBox<String> documentTypeComboBox;
-
-//    @FXML
-//    private ComboBox<String> stylesComboBox;
 
     @FXML
     ScrollPane rulesScrollPane;
@@ -88,16 +84,16 @@ public class StartController extends Window {
 
     private File docFile;
     private final DbSql dbSql = new DbSql();
-    private ObservableList<String> documentTypeList = FXCollections.observableArrayList();
-    private Map<String, String> schemas = new HashMap<>();
+    private final ObservableList<String> documentTypeList = FXCollections.observableArrayList();
+    private final Map<String, String> schemas = new HashMap<>();
     private Map<String, Map<String, String>> sectionRules = new HashMap<>();
     private Map<String, String> generalRules = new HashMap<>();
-    private XmlRulesGetter rulesGetter = new XmlRulesGetter();
-    private Logger log = Logger.getLogger(getClass().getName());
-    private Translator translator = new Translator();
+    private final XmlRulesGetter rulesGetter = new XmlRulesGetter();
+    private final Logger log = Logger.getLogger(getClass().getName());
+    private final Translator translator = new Translator();
 
-    private Font ruleFont = Font.font("Times New Roman", 15);
-    private Font keyFont = Font.font("Times New Roman", FontWeight.BOLD, 14);
+    private final Font ruleFont = Font.font("Times New Roman", 15);
+    private final Font keyFont = Font.font("Times New Roman", FontWeight.BOLD, 14);
 
     @FXML
     public void initialize() {
@@ -300,17 +296,17 @@ public class StartController extends Window {
     }
 
     private void setBlock(Boolean value) {
-        progressLabel       .setVisible(value);
-        progressIndicator   .setVisible(value);
-        fileButton          .setDisable(value);
+        progressLabel.setVisible(value);
+        progressIndicator.setVisible(value);
+        fileButton.setDisable(value);
         documentTypeComboBox.setDisable(value);
-        rulesScrollPane     .setDisable(value);
-        reportButton        .setDisable(value);
-        button              .setDisable(value);
-        templateButton      .setDisable(value);
-        styleButton         .setDisable(value);
-        validateButton      .setDisable(value);
-        fontButton          .setDisable(value);
+        rulesScrollPane.setDisable(value);
+        reportButton.setDisable(value);
+        button.setDisable(value);
+        templateButton.setDisable(value);
+        styleButton.setDisable(value);
+        validateButton.setDisable(value);
+        fontButton.setDisable(value);
 
     }
 
@@ -372,23 +368,33 @@ public class StartController extends Window {
 
     @FXML
     void clickStyleButton() {
-//        log.log(Level.INFO, "Открывается окно Стили");
-//        Stage stage = new Stage();
-//        try {
-//            Parent root = FXMLLoader.load(getClass().getResource("/fxml/styleEditor.fxml"));
-//            stage.setTitle("Стили");
-//            openNewWindow(stage, root, styleButton);
-//        } catch (IOException ex) {
-//            log.log(Level.WARNING, ex.getMessage());
-//        }
+        log.log(Level.INFO, "Открывается окно Стили");
+        String xsdPath = null;
+        for (Map.Entry<String, String> entry : schemas.entrySet()) {
+            if (entry.getKey().equals(documentTypeComboBox.getValue())) {
+                xsdPath = entry.getValue();
+            }
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/styleEditor.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Стили");
+            StyleEditorController controller = loader.getController();
+            controller.initData(xsdPath);
+            controller.initialize();
+            openNewWindow(stage, root, styleButton);
+        } catch (IOException ex) {
+            log.log(Level.WARNING, ex.getMessage());
+        }
     }
 
-    private void openNewWindow(Stage stage, Parent root, Button templateButton) {
+    private void openNewWindow(Stage stage, Parent root, Button button) {
         stage.getIcons().add(new Image("/images/clip.png"));
         stage.setScene(new Scene(root, 960, 600));
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(templateButton.getScene().getWindow());
+        stage.initOwner(button.getScene().getWindow());
         stage.show();
     }
 }
