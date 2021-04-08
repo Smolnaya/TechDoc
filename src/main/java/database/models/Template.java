@@ -4,12 +4,14 @@ public class Template {
     private int tempId;
     private String tempName;
     private String tempPath;
-    private String styleName;
+//    private String styleName;
 
     @Override
     public String toString() {
-        return String.format("id = %s, name = %s, path = %s, style = %s",
-                tempId, tempName, tempPath, styleName);
+        return String.format("id = %s, name = %s, path = %s",
+                tempId, tempName, tempPath
+//                , styleName
+        );
     }
 
     public int getTempId() {
@@ -36,11 +38,11 @@ public class Template {
         this.tempPath = tempPath;
     }
 
-    public String getStyleName() {
-        return styleName;
-    }
+//    public String getStyleName() {
+//        return styleName;
+//    }
 
-    public void setStyleName(String styleName) {
-        this.styleName = styleName;
-    }
+//    public void setStyleName(String styleName) {
+//        this.styleName = styleName;
+//    }
 }

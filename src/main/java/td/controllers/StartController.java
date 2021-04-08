@@ -21,8 +21,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.*;
+import td.services.FontValidator;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
+import td.tasks.FontValidationTask;
 import td.tasks.ValidationTask;
 
 import java.io.*;
@@ -49,6 +51,12 @@ public class StartController extends Window {
     private Button reportButton;
 
     @FXML
+    private Button button;
+
+    @FXML
+    private Button fontButton;
+
+    @FXML
     private Button templateButton;
 
     @FXML
@@ -66,8 +74,8 @@ public class StartController extends Window {
     @FXML
     private ComboBox<String> documentTypeComboBox;
 
-    @FXML
-    private ComboBox<String> stylesComboBox;
+//    @FXML
+//    private ComboBox<String> stylesComboBox;
 
     @FXML
     ScrollPane rulesScrollPane;
@@ -94,29 +102,14 @@ public class StartController extends Window {
     @FXML
     public void initialize() {
         List<Template> templateList = dbSql.selectTemplates();
-//        List<String> styleNameList = new ArrayList<>();
-        ObservableList<String> styleNameList = FXCollections.observableArrayList();
         if (templateList != null) {
             for (Template t : templateList) {
-                styleNameList.add(t.getStyleName());
                 schemas.put(t.getTempName(), t.getTempPath());
             }
         }
-//        File dir = new File("libs/xsd/");
-//        File[] arrFiles = dir.listFiles();
-//        if (arrFiles != null) {
-//            for (File file : arrFiles) {
-//                String fullName = file.getName();
-//                String fileName = fullName.substring(0, fullName.lastIndexOf("."));
-//                schemas.put(fileName, file.getPath());
-//            }
-//        }
         for (Map.Entry<String, String> entry : schemas.entrySet()) {
             documentTypeList.add(entry.getKey());
         }
-
-        stylesComboBox.setItems(styleNameList);
-        stylesComboBox.getSelectionModel().select(0);
 
         documentTypeComboBox.setItems(documentTypeList);
         documentTypeComboBox.getSelectionModel().select(0);
@@ -290,7 +283,7 @@ public class StartController extends Window {
             setBlock(true);
 
             ValidationTask task = new ValidationTask(documentTypeComboBox.getValue(), docFile.toPath(),
-                                                    generalRules, sectionRules);
+                    generalRules, sectionRules);
             task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
                     new EventHandler<WorkerStateEvent>() {
                         @Override
@@ -307,13 +300,18 @@ public class StartController extends Window {
     }
 
     private void setBlock(Boolean value) {
-        progressLabel.setVisible(value);
-        progressIndicator.setVisible(value);
-        fileButton.setDisable(value);
+        progressLabel       .setVisible(value);
+        progressIndicator   .setVisible(value);
+        fileButton          .setDisable(value);
         documentTypeComboBox.setDisable(value);
-        rulesScrollPane.setDisable(value);
-        validateButton.setDisable(value);
-        reportButton.setDisable(value);
+        rulesScrollPane     .setDisable(value);
+        reportButton        .setDisable(value);
+        button              .setDisable(value);
+        templateButton      .setDisable(value);
+        styleButton         .setDisable(value);
+        validateButton      .setDisable(value);
+        fontButton          .setDisable(value);
+
     }
 
     @FXML
@@ -345,16 +343,44 @@ public class StartController extends Window {
     }
 
     @FXML
+    void clickFontButton() {
+        if (docFile != null) {
+            String xsdPath = null;
+            for (Map.Entry<String, String> entry : schemas.entrySet()) {
+                if (entry.getKey().equals(documentTypeComboBox.getValue())) {
+                    xsdPath = entry.getValue();
+                }
+            }
+            setBlock(true);
+            FontValidationTask task = new FontValidationTask(docFile.getAbsolutePath(), xsdPath);
+
+            task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+                    new EventHandler<WorkerStateEvent>() {
+                        @Override
+                        public void handle(WorkerStateEvent t) {
+                            List<String> report = task.getValue();
+                            for (String s : report) {
+                                reportTextArea.appendText(s + "\n");
+                            }
+                            setBlock(false);
+                        }
+                    });
+            new Thread(task).start();
+        } else
+            reportTextArea.appendText("\nНадо выбрать файл");
+    }
+
+    @FXML
     void clickStyleButton() {
-        log.log(Level.INFO, "Открывается окно Стили");
-        Stage stage = new Stage();
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/styleEditor.fxml"));
-            stage.setTitle("Стили");
-            openNewWindow(stage, root, styleButton);
-        } catch (IOException ex) {
-            log.log(Level.WARNING, ex.getMessage());
-        }
+//        log.log(Level.INFO, "Открывается окно Стили");
+//        Stage stage = new Stage();
+//        try {
+//            Parent root = FXMLLoader.load(getClass().getResource("/fxml/styleEditor.fxml"));
+//            stage.setTitle("Стили");
+//            openNewWindow(stage, root, styleButton);
+//        } catch (IOException ex) {
+//            log.log(Level.WARNING, ex.getMessage());
+//        }
     }
 
     private void openNewWindow(Stage stage, Parent root, Button templateButton) {

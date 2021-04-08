@@ -10,9 +10,9 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="1000.0" stylesheets="@../css/start.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="td.controllers.StartController">
     <children>
-        <ScrollPane fx:id="rulesScrollPane" layoutX="30.0" layoutY="230.0" pannable="true" prefHeight="360.0" prefWidth="370.0" AnchorPane.bottomAnchor="105.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="135.0">
+        <ScrollPane fx:id="rulesScrollPane" layoutX="30.0" layoutY="230.0" pannable="true" prefHeight="360.0" prefWidth="450.0" AnchorPane.bottomAnchor="105.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="145.0">
             <content>
-                <VBox fx:id="container" prefHeight="338.0" prefWidth="335.0" spacing="5.0" style="-fx-border-radius: 30;">
+                <VBox fx:id="container" prefHeight="330.0" prefWidth="411.0" spacing="5.0" style="-fx-border-radius: 30;">
                     <opaqueInsets>
                         <Insets />
                     </opaqueInsets>
@@ -25,22 +25,17 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
         </ScrollPane>
-        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="RIGHT" layoutX="25.0" layoutY="30.0" mnemonicParsing="false" onAction="#clickFileButton" pickOnBounds="false" prefHeight="25.0" prefWidth="370.0" text="Выбрать файл" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="30.0">
+        <Button fx:id="fileButton" alignment="CENTER" contentDisplay="RIGHT" layoutX="28.0" layoutY="30.0" mnemonicParsing="false" onAction="#clickFileButton" pickOnBounds="false" prefHeight="26.0" prefWidth="450.0" text="Выбрать файл" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
             <font>
                 <Font name="Times New Roman" size="14.0" />
             </font>
         </Button>
-        <Label fx:id="fileNameLabel" alignment="CENTER" layoutX="40.0" layoutY="30.0" prefHeight="25.0" prefWidth="370.0" stylesheets="@../css/start.css" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="600.0" AnchorPane.topAnchor="30.0">
-            <font>
-                <Font name="Times New Roman" size="13.0" />
-            </font>
-        </Label>
-        <Button fx:id="validateButton" layoutX="30.0" layoutY="545.0" mnemonicParsing="false" onAction="#clickValidateButton" prefHeight="26.0" prefWidth="180.0" text="Проверить" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="30.0">
+        <Button fx:id="validateButton" layoutX="330.0" layoutY="509.0" mnemonicParsing="false" onAction="#clickValidateButton" prefHeight="26.0" prefWidth="150.0" text="Проверить правила" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="330.0">
             <font>
                 <Font name="Times New Roman" size="14.0" />
             </font>
         </Button>
-        <TextArea fx:id="reportTextArea" editable="false" layoutX="240.0" layoutY="32.0" prefHeight="545.0" prefWidth="732.0" wrapText="true" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="420.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+        <TextArea fx:id="reportTextArea" editable="false" layoutX="240.0" layoutY="32.0" prefHeight="540.0" prefWidth="426.0" wrapText="true" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
             <font>
                 <Font name="Times New Roman" size="18.0" />
             </font>
@@ -51,25 +46,35 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
         </TextArea>
-        <Button fx:id="reportButton" layoutX="220.0" layoutY="509.0" mnemonicParsing="false" onAction="#getReport" prefHeight="26.0" prefWidth="180.0" text="Экспортировать отчет" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="220.0">
+        <Button fx:id="reportButton" layoutX="30.0" layoutY="509.0" mnemonicParsing="false" onAction="#getReport" prefHeight="26.0" prefWidth="100.0" text="Отчет" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="30.0">
             <font>
                 <Font name="Times New Roman" size="14.0" />
             </font>
         </Button>
-      <ComboBox fx:id="stylesComboBox" layoutX="30.0" layoutY="101.0" prefHeight="25.0" prefWidth="370.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="600.0" AnchorPane.topAnchor="100.0" />
       <ProgressIndicator fx:id="progressIndicator" layoutX="113.0" layoutY="550.0" prefHeight="40.0" prefWidth="40.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="110.0" />
       <Label fx:id="progressLabel" layoutX="161.0" layoutY="558.0" prefHeight="25.0" prefWidth="180.0" stylesheets="@../css/start.css" text="выполняется проверка" textAlignment="CENTER" visible="false" wrapText="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="160.0">
          <font>
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <Button fx:id="templateButton" layoutX="30.0" layoutY="542.0" mnemonicParsing="false" onAction="#clickTemplateButton" prefHeight="26.0" prefWidth="180.0" text="Добавить шаблон">
+      <Button fx:id="templateButton" layoutX="30.0" layoutY="544.0" mnemonicParsing="false" onAction="#clickTemplateButton" prefHeight="26.0" prefWidth="100.0" text="Шаблоны" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0">
          <font>
             <Font name="Times New Roman" size="14.0" />
          </font>
       </Button>
-      <ComboBox fx:id="documentTypeComboBox" layoutX="30.0" layoutY="68.0" prefHeight="25.0" prefWidth="370.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="600.0" AnchorPane.topAnchor="65.0" />
-      <Button fx:id="styleButton" layoutX="220.0" layoutY="542.0" mnemonicParsing="false" onAction="#clickStyleButton" prefHeight="26.0" prefWidth="180.0" text="Стили">
+      <ComboBox fx:id="documentTypeComboBox" layoutX="30.0" layoutY="68.0" prefHeight="25.0" prefWidth="450.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="95.0" />
+      <Button fx:id="styleButton" layoutX="260.0" layoutY="544.0" mnemonicParsing="false" onAction="#clickStyleButton" prefHeight="26.0" prefWidth="100.0" text="Стили" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="140.0">
+         <font>
+            <Font name="Times New Roman" size="14.0" />
+         </font>
+      </Button>
+      <Label fx:id="fileNameLabel" alignment="CENTER" layoutX="246.0" layoutY="67.0" prefHeight="25.0" prefWidth="450.0" textAlignment="CENTER" underline="true" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="65.0" />
+      <Button fx:id="fontButton" layoutX="340.0" layoutY="544.0" mnemonicParsing="false" onAction="#clickFontButton" prefHeight="26.0" prefWidth="150.0" text="Проверить шрифт" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="330.0">
+         <font>
+            <Font name="Times New Roman" size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="button" layoutX="140.0" layoutY="509.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Кнопка" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="140.0">
          <font>
             <Font name="Times New Roman" size="14.0" />
          </font>

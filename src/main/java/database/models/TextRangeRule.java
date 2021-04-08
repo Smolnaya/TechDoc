@@ -1,14 +1,49 @@
 package database.models;
 
-public class TextRange {
+import java.util.ArrayList;
+import java.util.List;
+
+public class TextRangeRule {
     private int textRangeId;
-    private int styleId;
-    private int fontNameId;
     private boolean textBold;
+    private int fontNameId;
+    private String fontName;
     private float fontSize;
     private String textColor;
     private boolean textItalic;
     private boolean textCap;
+    private int styleId;
+
+    public List<String> compare(TextRangeRule tr) {
+        List<String> errorList = new ArrayList<>();
+        if (textBold != tr.getTextBold()) {
+            errorList.add("Жирность не та. ТЗ: " + textBold);
+        }
+        if (!fontName.equals(tr.getFontName())) {
+            errorList.add("Не тот шрифт. ТЗ: " + fontName);
+        }
+        if (fontSize != tr.getFontSize()) {
+            errorList.add("Не тот размер. ТЗ: " + fontSize);
+        }
+        if (!textColor.equals(tr.getTextColor())) {
+            errorList.add("Плохой цвет. ТЗ: " + textColor);
+        }
+        if (textItalic != tr.textItalic) {
+            errorList.add("Ошибка с наклоном. ТЗ: " + textItalic);
+        }
+//        if (textCap != tr.textCap) {
+//            errorList.add("Ошибка в капсе.");
+//        }
+        return errorList;
+    }
+
+    public String getFontName() {
+        return fontName;
+    }
+
+    public void setFontName(String fontName) {
+        this.fontName = fontName;
+    }
 
     public int getTextRangeId() {
         return textRangeId;

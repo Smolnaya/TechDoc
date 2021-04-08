@@ -1,9 +1,9 @@
 package database;
 
-import database.models.Paragraph;
+import database.models.ParagraphRule;
 import database.models.Style;
 import database.models.Template;
-import database.models.TextRange;
+import database.models.TextRangeRule;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,10 +14,103 @@ import java.util.logging.Logger;
 public class DbSql {
     private final String dbPath = "tddb.db";
     private final Logger log = Logger.getLogger(getClass().getName());
+    private final DbService service = new DbService();
+    // TODO: добавить проверку -> запрет на разные стили у элементов одного уровня
+    // уникальность elem_header
 
+    // выбрать id xsd по пути
+    public int getTempID(String path) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT temp_id FROM templates WHERE temp_path = '%s'";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, path));
+            if (rs.next()) {
+                return rs.getInt("temp_id");
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getTempID()', пустой ответ.");
+                return -1;
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getTempID()'", ex);
+            return -1;
+        }
+    }
+
+    // выбрать настройки TR по id стиля
+    public TextRangeRule getTRRule(int styleID) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT text_ranges.bold, " +
+                    "font_names.font_name, " +
+                    "text_ranges.font_size, " +
+                    "text_ranges.text_color, " +
+                    "text_ranges.italic, " +
+                    "text_ranges.all_caps " +
+                    "FROM text_ranges " +
+                    "join font_names on text_ranges.font_name_id = font_names.font_id " +
+                    "WHERE text_ranges.text_range_style_id = %s;";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, styleID));
+            TextRangeRule tr = new TextRangeRule();
+            if (rs.next()) {
+                do {
+                    tr.setTextBold(service.toBoolean(rs.getInt("bold")));
+                    tr.setFontName(rs.getString("font_name"));
+                    tr.setFontSize(rs.getFloat("font_size"));
+                    tr.setTextColor(rs.getString("text_color"));
+                    tr.setTextItalic(service.toBoolean(rs.getInt("italic")));
+                    tr.setTextCap(service.toBoolean(rs.getInt("all_caps")));
+                } while (rs.next());
+            }
+            return tr;
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getTRRule()'", ex);
+            return new TextRangeRule();
+        }
+    }
+
+    // выбрать настройки paragraph по id стиля
+    public ParagraphRule getParaRule(int styleID) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT alignment.align_name, " +
+                    "paragraphs.line_space, " +
+                    "paragraphs.indent " +
+                    "FROM paragraphs " +
+                    "join alignment on paragraphs.alignment_id = alignment.align_id " +
+                    "WHERE paragraphs.para_style_id = %s;";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, styleID));
+            ParagraphRule pr = new ParagraphRule();
+            if (rs.next()) {
+                do {
+                    pr.setAlignName(rs.getString("align_name"));
+                    pr.setLineSpace(rs.getFloat("line_space"));
+                    pr.setParagraphIndent(rs.getFloat("indent"));
+                } while (rs.next());
+            }
+            return pr;
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getParaRule()'", ex);
+            return new ParagraphRule();
+        }
+    }
+
+    // выбрать стиль элемента у которого elem_header = level
+    public int getStyleID(int tempID, int lvl) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "SELECT elem_style_id FROM elements WHERE elem_temp_id = %s and elem_header = %s";
+            ResultSet rs = conn.createStatement().executeQuery(String.format(query, tempID, lvl));
+            if (rs.next()) {
+                return rs.getInt("elem_style_id");
+            } else {
+                log.log(Level.WARNING, "Не удалось выполнить 'getStyleID()', пустой ответ.");
+                return -1;
+            }
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getStyleID()'", ex);
+            return -1;
+        }
+    }
 
     /**
      * Вставка в бд имени нового стиля.
+     *
      * @param style String
      * @return true если строки добавлены
      */
@@ -34,15 +127,13 @@ public class DbSql {
                 return false;
             }
             return numRowsInserted != 0;
-        }
-        else {
+        } else {
             log.log(Level.WARNING, String.format("Стиль с именем '%s' уже существует.", style));
             return false;
         }
     }
 
     /**
-     *
      * @return последний style_id
      */
     public int selectLastIdStyle() {
@@ -58,10 +149,11 @@ public class DbSql {
 
     /**
      * Вставка в бд параметров стиля абзаца.
+     *
      * @param paragraph database.models.Paragraph
      * @return true если строки добавлены
      */
-    public Boolean insertParagraph(Paragraph paragraph) {
+    public Boolean insertParagraph(ParagraphRule paragraph) {
         int numRowsInserted;
         PreparedStatement ps;
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
@@ -79,10 +171,11 @@ public class DbSql {
 
     /**
      * Вставка в бд параметров стиля текста.
+     *
      * @param tr database.models.TextRange
      * @return true если строки добавлены
      */
-    public Boolean insertTextRange(TextRange tr) {
+    public Boolean insertTextRange(TextRangeRule tr) {
         int numRowsInserted;
         PreparedStatement ps;
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
@@ -100,6 +193,7 @@ public class DbSql {
 
     /**
      * Проверка на то, что имя стиля уникально.
+     *
      * @param name String
      * @return true если уникально
      */
@@ -116,6 +210,7 @@ public class DbSql {
 
     /**
      * Выборка всех стилей в бд
+     *
      * @return список Style
      */
     public List<Style> selectStyles() {
@@ -134,17 +229,17 @@ public class DbSql {
             if (rs.next()) {
                 do {
                     Style style = new Style();
-                    style.setStyleId(   rs.getInt("style_id"));
-                    style.setStyleName( rs.getString("style_name"));
-                    style.setAlignment( rs.getString("align_name"));
-                    style.setFontName(  rs.getString("font_name"));
-                    style.setTextColor( rs.getString("text_color"));
-                    style.setLineSpace( rs.getFloat("line_space"));
-                    style.setIndent(    rs.getFloat("indent"));
-                    style.setFontSize(  rs.getFloat("font_size"));
-                    style.setItalic(    rs.getBoolean("italic"));
-                    style.setAllCaps(   rs.getBoolean("all_caps"));
-                    style.setBold(      rs.getBoolean("bold"));
+                    style.setStyleId(rs.getInt("style_id"));
+                    style.setStyleName(rs.getString("style_name"));
+                    style.setAlignment(rs.getString("align_name"));
+                    style.setFontName(rs.getString("font_name"));
+                    style.setTextColor(rs.getString("text_color"));
+                    style.setLineSpace(rs.getFloat("line_space"));
+                    style.setIndent(rs.getFloat("indent"));
+                    style.setFontSize(rs.getFloat("font_size"));
+                    style.setItalic(rs.getBoolean("italic"));
+                    style.setAllCaps(rs.getBoolean("all_caps"));
+                    style.setBold(rs.getBoolean("bold"));
                     styleList.add(style);
                 } while (rs.next());
                 return styleList;
@@ -157,22 +252,21 @@ public class DbSql {
 
     /**
      * Выборка всех шаблонов в БД (id, name, path, style_name)
+     *
      * @return List<Template>
      */
     public List<Template> selectTemplates() {
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
             String query = "select templates.temp_id, templates.temp_name, " +
-                    "templates.temp_path, styles.style_name from templates " +
-                    "inner join styles on templates.temp_style_id = styles.style_id;";
+                    "templates.temp_path from templates;";
             ResultSet rs = conn.createStatement().executeQuery(query);
             List<Template> templateList = new ArrayList<>();
             if (rs.next()) {
                 do {
                     Template template = new Template();
-                    template.setTempId(     rs.getInt("temp_id"));
-                    template.setTempName(   rs.getString("temp_name"));
-                    template.setTempPath(   rs.getString("temp_path"));
-                    template.setStyleName(  rs.getString("style_name"));
+                    template.setTempId(rs.getInt("temp_id"));
+                    template.setTempName(rs.getString("temp_name"));
+                    template.setTempPath(rs.getString("temp_path"));
                     templateList.add(template);
                 } while (rs.next());
                 return templateList;
@@ -185,6 +279,7 @@ public class DbSql {
 
     /**
      * Выборка  всех названий отступов в БД
+     *
      * @return List<String>
      */
     public List<String> selectAlignments() {
@@ -206,6 +301,7 @@ public class DbSql {
 
     /**
      * Выборка всех названий шрифтов в БД
+     *
      * @return List<String>
      */
     public List<String> selectFontNames() {

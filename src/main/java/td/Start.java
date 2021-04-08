@@ -22,7 +22,7 @@ public class Start extends Application {
     @Override
     public void init() {
         this.notifyPreloader(new Preloader.ProgressNotification(0.0));
-        JMorfSdkManager jMorfSdkManager = new JMorfSdkManager();
+//        JMorfSdkManager jMorfSdkManager = new JMorfSdkManager();
         this.notifyPreloader(new Preloader.ProgressNotification(1.0));
     }
 
