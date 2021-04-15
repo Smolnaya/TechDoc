@@ -108,7 +108,7 @@ public class StartController extends Window {
         }
 
         documentTypeComboBox.setItems(documentTypeList);
-        documentTypeComboBox.getSelectionModel().select(0);
+        documentTypeComboBox.getSelectionModel().select(3);
 
         chooseSchema();
         documentTypeComboBox.setOnAction(event -> chooseSchema());
@@ -382,7 +382,6 @@ public class StartController extends Window {
             stage.setTitle("Стили");
             StyleEditorController controller = loader.getController();
             controller.initData(xsdPath);
-            controller.initialize();
             openNewWindow(stage, root, styleButton);
         } catch (IOException ex) {
             log.log(Level.WARNING, ex.getMessage());
@@ -392,7 +391,7 @@ public class StartController extends Window {
     private void openNewWindow(Stage stage, Parent root, Button button) {
         stage.getIcons().add(new Image("/images/clip.png"));
         stage.setScene(new Scene(root, 960, 600));
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(button.getScene().getWindow());
         stage.show();

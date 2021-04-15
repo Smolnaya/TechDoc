@@ -17,19 +17,19 @@ public class TextRangeRule {
     public List<String> compare(TextRangeRule tr) {
         List<String> errorList = new ArrayList<>();
         if (textBold != tr.getTextBold()) {
-            errorList.add("Жирность не та. ТЗ: " + textBold);
+            errorList.add("Ошибка с жирностью.");
         }
         if (!fontName.equals(tr.getFontName())) {
-            errorList.add("Не тот шрифт. ТЗ: " + fontName);
+            errorList.add("Не тот шрифт.");
         }
         if (fontSize != tr.getFontSize()) {
-            errorList.add("Не тот размер. ТЗ: " + fontSize);
+            errorList.add("Не тот размер. ТЗ: ");
         }
         if (!textColor.equals(tr.getTextColor())) {
-            errorList.add("Плохой цвет. ТЗ: " + textColor);
+            errorList.add("Не тот цвет.");
         }
         if (textItalic != tr.textItalic) {
-            errorList.add("Ошибка с наклоном. ТЗ: " + textItalic);
+            errorList.add("Ошибка с наклоном.");
         }
 //        if (textCap != tr.textCap) {
 //            errorList.add("Ошибка в капсе.");

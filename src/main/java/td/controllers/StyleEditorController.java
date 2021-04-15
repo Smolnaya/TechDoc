@@ -65,17 +65,13 @@ public class StyleEditorController extends Window {
     private final Logger log = Logger.getLogger(getClass().getName());
     private final DbSql dbSql = new DbSql();
 
+    @FXML
     public void initialize() {
-        xsdNameLabel.setText(tempName);
-        styleListCB.setItems(styleList);
-        alignCB.setItems(alignList);
-        fontNameCB.setItems(fontList);
-        styleListCB.getSelectionModel().selectFirst();
-//        fill();
-        styleListCB.setOnAction(event -> fill());
+        log.log(Level.INFO, "initialize()");
     }
 
     public void initData(String path) {
+        log.log(Level.INFO, "initData( " + path + ")");
         xsdPath = path;
         tempID = dbSql.getTempID(xsdPath);
         tempName = dbSql.getTempName(xsdPath);
@@ -83,9 +79,19 @@ public class StyleEditorController extends Window {
         styleList.addAll(dbSql.getTempStyles(tempID));
         alignList.addAll(dbSql.getAlignments());
         fontList.addAll(dbSql.getFontNames());
+
+        xsdNameLabel.setText(tempName);
+        styleListCB.setItems(styleList);
+        alignCB.setItems(alignList);
+        fontNameCB.setItems(fontList);
+        styleListCB.getSelectionModel().selectFirst();
+
+        fill();
+        styleListCB.setOnAction(event -> fill());
     }
 
     private void fill() {
+        log.log(Level.INFO, "fill()");
         int curStyleID = dbSql.getStyleID(styleListCB.getValue());
         ParagraphRule pr = dbSql.getParaRule(curStyleID);
         TextRangeRule tr = dbSql.getTRRule(curStyleID);

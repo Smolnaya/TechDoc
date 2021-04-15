@@ -334,6 +334,11 @@ public class DbSql {
      * @return List<Template>
      */
     public List<Template> selectTemplates() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
             String query = "select templates.temp_id, templates.temp_name, " +
                     "templates.temp_path from templates;";

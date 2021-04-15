@@ -3,7 +3,10 @@ package td.services;
 import com.spire.doc.Document;
 import com.spire.doc.FileFormat;
 import com.spire.doc.Section;
+import com.spire.doc.documents.CommentMark;
+import com.spire.doc.documents.CommentMarkType;
 import com.spire.doc.documents.Paragraph;
+import com.spire.doc.fields.Comment;
 import com.spire.doc.fields.TextRange;
 import com.spire.doc.formatting.CharacterFormat;
 import database.DbSql;
@@ -87,7 +90,11 @@ public class FontValidator {
                         java.util.List<String> paraErrors = paragraphRule.compare(prInfo);
                         if (!paraErrors.isEmpty()) {
                             for (String error : paraErrors) {
-                                paragraph.appendComment(error);
+                                Comment comment = new Comment(document);
+                                comment.getBody().addParagraph().setText(error);
+                                comment.getFormat().setAuthor("TechDoc");
+                                paragraph.getChildObjects().add(comment);
+//                                paragraph.appendComment(error);
                             }
                         }
 
