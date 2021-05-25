@@ -103,6 +103,10 @@ public class StyleEditorController extends Window {
         sizeTF.setText(String.valueOf(tr.getFontSize()));
         colorPicker.setValue(Color.valueOf(tr.getTextColor()));
         italicCheck.setSelected(tr.getTextItalic());
-        capsCheck.setSelected((tr.getTextCap()));
+        capsCheck.setSelected(tr.getTextCap());
+    }
+
+    private void setAcceptButton() {
+
     }
 }

@@ -1,5 +1,7 @@
 package database.models;
 
+import com.spire.doc.documents.HorizontalAlignment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,20 @@ public class ParagraphRule {
 
     public String getAlignName() {
         return alignName;
+    }
+
+    public HorizontalAlignment getHA() {
+        if (alignName.equals("Center")) {
+            return HorizontalAlignment.Center;
+        } else if (alignName.equals("Left")) {
+            return HorizontalAlignment.Left;
+        } else if (alignName.equals("Right")) {
+            return HorizontalAlignment.Right;
+        } else if (alignName.equals("Justify")) {
+            return HorizontalAlignment.Justify;
+        } else {
+            return HorizontalAlignment.Left;
+        }
     }
 
     public void setAlignName(String alignName) {

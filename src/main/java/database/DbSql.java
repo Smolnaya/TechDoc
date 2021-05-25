@@ -129,12 +129,12 @@ public class DbSql {
             TextRangeRule tr = new TextRangeRule();
             if (rs.next()) {
                 do {
-                    tr.setTextBold(service.toBoolean(rs.getInt("bold")));
+                    tr.setTextBold(service.intToBoolean(rs.getInt("bold")));
                     tr.setFontName(rs.getString("font_name"));
                     tr.setFontSize(rs.getFloat("font_size"));
                     tr.setTextColor(rs.getString("text_color"));
-                    tr.setTextItalic(service.toBoolean(rs.getInt("italic")));
-                    tr.setTextCap(service.toBoolean(rs.getInt("all_caps")));
+                    tr.setTextItalic(service.intToBoolean(rs.getInt("italic")));
+                    tr.setTextCap(service.intToBoolean(rs.getInt("all_caps")));
                 } while (rs.next());
             }
             return tr;

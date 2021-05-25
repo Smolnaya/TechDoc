@@ -10,6 +10,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tooltip;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -21,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.*;
+import td.services.DocFileCreator;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
 import td.tasks.FontValidationTask;
@@ -50,7 +52,7 @@ public class StartController extends Window {
     private Button reportButton;
 
     @FXML
-    private Button button;
+    private Button createButton;
 
     @FXML
     private Button fontButton;
@@ -112,6 +114,8 @@ public class StartController extends Window {
 
         chooseSchema();
         documentTypeComboBox.setOnAction(event -> chooseSchema());
+
+        createButton.setTooltip((new Tooltip("Создать файл Word на основе выбранного шаблона.")));
     }
 
     @FXML
@@ -295,6 +299,26 @@ public class StartController extends Window {
         }
     }
 
+    @FXML
+    void clickCreateDocButton() {
+        FileChooser fileChooser = new FileChooser(); // Класс работы с диалогом выборки и сохранения
+        fileChooser.setTitle("Создать файл в папке"); // Заголовок диалога
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("Word files (*.docx)", "*.docx");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(this); // Указываем текущую сцену
+        if (file != null) {
+            String xsdPath = null;
+            for (Map.Entry<String, String> entry : schemas.entrySet()) {
+                if (entry.getKey().equals(documentTypeComboBox.getValue())) {
+                    xsdPath = entry.getValue();
+                }
+            }
+            DocFileCreator fileCreator = new DocFileCreator(xsdPath, file.toString());
+            fileCreator.createDocFile();
+        }
+    }
+
     private void setBlock(Boolean value) {
         progressLabel.setVisible(value);
         progressIndicator.setVisible(value);
@@ -302,7 +326,7 @@ public class StartController extends Window {
         documentTypeComboBox.setDisable(value);
         rulesScrollPane.setDisable(value);
         reportButton.setDisable(value);
-        button.setDisable(value);
+        createButton.setDisable(value);
         templateButton.setDisable(value);
         styleButton.setDisable(value);
         validateButton.setDisable(value);
