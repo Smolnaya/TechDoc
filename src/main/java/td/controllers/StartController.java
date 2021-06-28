@@ -282,8 +282,14 @@ public class StartController extends Window {
             reportTextArea.clear();
             setBlock(true);
 
-            ValidationTask task = new ValidationTask(documentTypeComboBox.getValue(), docFile.toPath(),
-                    generalRules, sectionRules);
+            String xsdPath = null;
+            for (Map.Entry<String, String> entry : schemas.entrySet()) {
+                if (entry.getKey().equals(documentTypeComboBox.getValue())) {
+                    xsdPath = entry.getValue();
+                }
+            }
+
+            ValidationTask task = new ValidationTask(xsdPath, docFile.toPath(), generalRules, sectionRules);
             task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
                     new EventHandler<WorkerStateEvent>() {
                         @Override

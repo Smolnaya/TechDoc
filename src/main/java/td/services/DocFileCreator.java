@@ -34,18 +34,24 @@ public class DocFileCreator {
         List<String> sectionKindList = xmlRules.getSectionKind(xsdPath);
         Set<String> set = new LinkedHashSet<>(sectionKindList);
         Map<String, Map<String, String>> sectionRules = xmlRules.getDocumentRules(xsdPath);
-        List<String> headers = new ArrayList<>();
+        HashMap<String, Integer> headers = new LinkedHashMap<>();
 
         // Перебор разделов
         for (String str : set) {
             // Поиск заголовка
             for (Map.Entry<String, Map<String, String>> section : sectionRules.entrySet()) {
                 if (str.equals(section.getKey())) {
+                    String key = "";
+                    int value = 1;
                     for (Map.Entry<String, String> rule : section.getValue().entrySet()) {
                         if (rule.getKey().equals("title") || rule.getKey().equals("titleContains")) {
-                            headers.add(rule.getValue());
+                            key = rule.getValue();
+                        }
+                        if (rule.getKey().equals("minSubsectionQuantity")) {
+                            value = Integer.parseInt(rule.getValue());
                         }
                     }
+                    headers.put(key, value);
                 }
             }
         }
@@ -67,38 +73,40 @@ public class DocFileCreator {
     }
 
 
-    private void writeFile(List<String> headers, ParagraphRule paragraphRuleHeader, TextRangeRule textRangeRuleHeader,
-                            ParagraphRule paragraphRuleText, TextRangeRule textRangeRuleText, String fileName) {
+    private void writeFile(Map<String, Integer> headers, ParagraphRule paragraphRuleHeader, TextRangeRule textRangeRuleHeader,
+                           ParagraphRule paragraphRuleText, TextRangeRule textRangeRuleText, String fileName) {
         Document document = new Document();
         createStyles(document, textRangeRuleHeader, textRangeRuleText);
 
-        for (String header : headers) {
-            Section section = document.addSection();
+        for (Map.Entry<String, Integer> header : headers.entrySet()) {
+            for (int j = 0; j < header.getValue(); j++) {
+                Section section = document.addSection();
 
-            // Текст заголовка
-            Paragraph para1 = section.addParagraph();
-            para1.appendText(header);
-            // Настройки абзаца
-            para1.getFormat().setFirstLineIndent(paragraphRuleHeader.getParagraphIndent());
-            para1.getFormat().setLineSpacing(paragraphRuleHeader.getLineSpace());
-            para1.getFormat().setHorizontalAlignment(paragraphRuleHeader.getHA());
-            // Настройка текста
-            para1.applyStyle("Heading 1 TD");
+                // Текст заголовка
+                Paragraph para1 = section.addParagraph();
+                para1.appendText(header.getKey());
+                // Настройки абзаца
+                para1.getFormat().setFirstLineIndent(paragraphRuleHeader.getParagraphIndent());
+                para1.getFormat().setLineSpacing(paragraphRuleHeader.getLineSpace());
+                para1.getFormat().setHorizontalAlignment(paragraphRuleHeader.getHA());
+                // Настройка текста
+                para1.applyStyle("Heading 1 TD");
 
-            // Текст раздела
-            Paragraph para2 = section.addParagraph();
-            para2.appendText("Текст раздела");
-            // Настройки абзаца
-            para2.getFormat().setFirstLineIndent(paragraphRuleText.getParagraphIndent());
-            para2.getFormat().setLineSpacing(paragraphRuleText.getLineSpace());
-            para2.getFormat().setHorizontalAlignment(paragraphRuleText.getHA());
-            para2.getFormat().setAfterAutoSpacing(false);
-            para2.getFormat().setBeforeAutoSpacing(false);
-            // Настройка текста
-            para2.applyStyle("Main Text TD");
+                // Текст раздела
+                Paragraph para2 = section.addParagraph();
+                para2.appendText("Текст раздела");
+                // Настройки абзаца
+                para2.getFormat().setFirstLineIndent(paragraphRuleText.getParagraphIndent());
+                para2.getFormat().setLineSpacing(paragraphRuleText.getLineSpace());
+                para2.getFormat().setHorizontalAlignment(paragraphRuleText.getHA());
+                para2.getFormat().setAfterAutoSpacing(false);
+                para2.getFormat().setBeforeAutoSpacing(false);
+                // Настройка текста
+                para2.applyStyle("Main Text TD");
 
-            // Сохранение файла
-            document.saveToFile(fileName, FileFormat.Docx);
+                // Сохранение файла
+                document.saveToFile(fileName, FileFormat.Docx);
+            }
         }
     }
 

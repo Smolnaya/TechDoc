@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WordDocumentCreator {
 
@@ -31,10 +34,16 @@ public class WordDocumentCreator {
                     String styleid = paragraphs.get(i).getStyleID();
                     XWPFStyle style = styles.getStyle(styleid);
                     if (style != null) {
-                        if (style.getName().startsWith("heading")) {
+                        if (style.getName().toLowerCase(Locale.ROOT).startsWith("heading")) {
                             Section heading = new Section();
                             heading.setTitle(paragraphs.get(i).getText());
-                            heading.setLevel(Integer.parseInt(paragraphs.get(i).getStyleID()));
+                            int level = 0;
+                            Pattern pattern = Pattern.compile("\\d+");
+                            Matcher matcher = pattern.matcher(styleid);
+                            if (matcher.find()) {
+                                level = Integer.parseInt(matcher.group());
+                            }
+                            heading.setLevel(level);
                             if (heading.getLevel() == currentLvl) {
                                 heading.setParentHeader(currentParentHeader);
                                 currentParentHeader.getSubheadersList().add(heading);

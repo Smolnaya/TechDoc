@@ -14,41 +14,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Validator {
-    private Logger log = Logger.getLogger(getClass().getName());
-    private WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
-    private XmlFileCreator xmlCreator = new XmlFileCreator();
     private static final String XML_FILE = "libs/xml/generatedXml.xml";
-    private static final String FULL_VKRB_SCHEMA = "libs/xsd/VKRB.xsd";
-    private static final String GOST34_602_89 = "libs/xsd/GOST34_602_89.xsd";
-    private static final String RD_50_34_698_90 = "libs/xsd/RD_50_34_698_90.xsd";
+    private final Logger log = Logger.getLogger(getClass().getName());
+    private final WordDocumentCreator wordDocumentCreator = new WordDocumentCreator();
+    private final XmlFileCreator xmlCreator = new XmlFileCreator();
 
-    private List<String> report = new ArrayList<>();
+    private final List<String> report = new ArrayList<>();
 
-    public List<String> validate(String docType, Path docPath, Map<String, String> userGeneralRules,
+    public List<String> validate(String schema, Path docPath, Map<String, String> userGeneralRules,
                                  Map<String, Map<String, String>> userSectionRules) {
-        String schema = "";
-        if (docType.equals("ВКРБ")) {
-            schema = FULL_VKRB_SCHEMA;
-        } else if (docType.equals("Техническое задание")) {
-            schema = GOST34_602_89;
-        } else if (docType.equals("Руководство пользователя")) {
-            schema = RD_50_34_698_90;
-        }
+
         WordDocument document = validateDocModel(docPath);
         if (!document.getSections().isEmpty()) {
             if (validateXml(schema)) {
                 if (validateRules(Paths.get(schema), document, userGeneralRules, userSectionRules)) {
                     log.log(Level.INFO, "Validation - true!");
-                    return report;
-                } else {
-                    return report;
                 }
-            } else {
-                return report;
             }
-        } else {
-            return report;
         }
+        return report;
     }
 
     private WordDocument validateDocModel(Path docPath) {
@@ -93,9 +77,9 @@ public class Validator {
             return true;
         } else {
             log.log(Level.WARNING, "Third validation - false");
-            for (int i = 0; i < errors.size(); i++) {
-                log.log(Level.WARNING, errors.get(i));
-                report.add(errors.get(i));
+            for (String error : errors) {
+                log.log(Level.WARNING, error);
+                report.add(error);
             }
             return false;
         }
