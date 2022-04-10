@@ -1,8 +1,6 @@
 package td.services;
 
-import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
-import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
-import ru.textanalysis.tawt.ms.storage.OmoFormList;
+import ru.textanalysis.tawt.ms.model.jmorfsdk.Form;
 import td.domain.Section;
 import td.domain.Term;
 
@@ -10,8 +8,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyParameters.Name.ABBREVIATION;
-import static ru.textanalysis.tfwwt.morphological.structures.grammeme.MorfologyParameters.Name.IDENTIFIER;
+import static ru.textanalysis.tawt.ms.grammeme.MorfologyParameters.Name.ABBREVIATION;
+import static ru.textanalysis.tawt.ms.grammeme.MorfologyParameters.Name.IDENTIFIER;
 
 public class AbbreviationValidator {
     public static List<Term> getTermList(Section document) {
@@ -43,8 +41,8 @@ public class AbbreviationValidator {
                 Matcher matcher = pattern.matcher(s);
                 while (matcher.find()) {
                     String string = s.replaceAll("[^A-Za-zА-Яа-я]", "");
-                    OmoFormList list = JMorfSdkManager.getjMorfSdk().getAllCharacteristicsOfForm(string.toLowerCase());
-                    if (!list.isEmpty() && list.stream().anyMatch(form -> (form.getAllMorfCharacteristics() & IDENTIFIER) == ABBREVIATION)) {
+                    List<Form> list = JMorfSdkManager.getjMorfSdk().getOmoForms(string.toLowerCase());
+                    if (!list.isEmpty() && list.stream().anyMatch(form -> (form.getMorphCharacteristics() & IDENTIFIER) == ABBREVIATION)) {
                         abbreviationInText.add(string);
                     }
                 }

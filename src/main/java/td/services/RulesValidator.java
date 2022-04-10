@@ -2,10 +2,8 @@ package td.services;
 
 import methodOfSummarizationAndElementsOfText.MethodsOfSummarizationAndElementsOfText;
 import ru.library.text.word.Word;
-import ru.textanalysis.tawt.jmorfsdk.JMorfSdk;
-import ru.textanalysis.tawt.jmorfsdk.loader.JMorfSdkFactory;
-import ru.textanalysis.tawt.ms.storage.OmoFormList;
-import ru.textanalysis.tawt.ms.internal.IOmoForm;
+
+import ru.textanalysis.tawt.ms.model.jmorfsdk.Form;
 import td.domain.Section;
 import td.domain.Term;
 import td.domain.WordDocument;
@@ -419,8 +417,8 @@ public class RulesValidator {
             List<String> wordForms = JMorfSdkManager.getjMorfSdk().getStringInitialForm(string.toLowerCase());
             if (!wordForms.isEmpty()) {
                 for (String s : wordForms) {
-                    OmoFormList omoForms = JMorfSdkManager.getjMorfSdk().getAllCharacteristicsOfForm(s);
-                    for (IOmoForm omoForm : omoForms) {
+                    List<Form> omoForms = JMorfSdkManager.getjMorfSdk().getOmoForms(s);
+                    for (Form omoForm : omoForms) {
                         if (omoForm.getTypeOfSpeech() == 17) {
                             initialForms.add(omoForm.getInitialFormString());
                         }

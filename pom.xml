@@ -12,9 +12,12 @@
     <properties>
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
         <springfox-swagger.version>2.9.2</springfox-swagger.version>
+        <version.tawt>206f5eba5</version.tawt>
     </properties>
 
     <dependencies>
+
+        <!--        FX      -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -27,22 +30,28 @@
             <version>15.0.1</version>
         </dependency>
 
+        <!--        POI     -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>4.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.15</version>
         </dependency>
 
+        <!--        TAWT    -->
+        <dependency>
+            <groupId>com.github.jalexpr</groupId>
+            <artifactId>tawt</artifactId>
+            <version>${version.tawt}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>gama</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ru.textanalysis.tawt</groupId>
@@ -54,11 +63,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>ambiguity-words-filter</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ru.textanalysis.tawt</groupId>
@@ -70,41 +78,35 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>jmorfsdk</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ru.textanalysis.tawt</groupId>
                     <artifactId>morphological-structures</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>ru.textanalysis.tawt</groupId>
+                    <artifactId>morphological-dictionary</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>graphematic-parser</artifactId>
-            <version>c6564ac2ac</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ru.textanalysis.tawt</groupId>
-                    <artifactId>morphological-structures</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${version.tawt}</version>
         </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>morphological-structures</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
         </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>rules-for-compatibility</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ru.textanalysis.tawt</groupId>
@@ -112,24 +114,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.jalexpr</groupId>
-            <artifactId>MorphologicalStructures</artifactId>
-            <version>521c1ddeed</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.jalexpr</groupId>
-            <artifactId>Parser</artifactId>
-            <version>a4e81cce5</version>
-        </dependency>
-
         <dependency>
             <groupId>com.github.jalexpr.tawt</groupId>
             <artifactId>syntactic-parser</artifactId>
-            <version>c6564ac2ac</version>
+            <version>${version.tawt}</version>
             <exclusions>
+                <exclusion>
+                    <groupId>ru.textanalysis.tawt</groupId>
+                    <artifactId>morphological-structures</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>ru.textanalysis.tawt</groupId>
                     <artifactId>gama</artifactId>
@@ -142,25 +135,15 @@
                     <groupId>ru.textanalysis.tawt</groupId>
                     <artifactId>rules-for-compatibility</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>ru.textanalysis.tawt</groupId>
-                    <artifactId>morphological-structures</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
-            <groupId>ru.summarization.methods</groupId>
-            <artifactId>summarization</artifactId>
-            <version>1.0.0</version>
+            <groupId>com.github.jalexpr.tawt</groupId>
+            <artifactId>morphological-dictionary</artifactId>
+            <version>${version.tawt}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
+        <!--        SPRING      -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -176,7 +159,7 @@
         <dependency>
             <groupId>e-iceblue</groupId>
             <artifactId>spire.doc.free</artifactId>
-            <version>2.7.3</version>
+            <version>3.9.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
@@ -204,7 +187,7 @@
         <repository>
             <id>com.e-iceblue</id>
             <name>e-iceblue</name>
-            <url>http://repo.e-iceblue.com/nexus/content/groups/public/</url>
+            <url>https://repo.e-iceblue.com/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -229,6 +212,7 @@
                 </configuration>
             </plugin>
 
+            <!--            FX      -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -238,12 +222,13 @@
                 </configuration>
             </plugin>
 
+            <!--            MAVEN       -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
 
