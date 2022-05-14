@@ -2,12 +2,14 @@ package td.tasks;
 
 import javafx.concurrent.Task;
 import td.services.FontValidator;
+import td.services.TermValidator;
 
 import java.util.Collections;
 import java.util.List;
 
 public class FontValidationTask extends Task<List<String>> {
-    private static FontValidator validator = new FontValidator();
+    private static FontValidator fontValidator = new FontValidator();
+    private static TermValidator termValidator = new TermValidator();
     String filePath;
     String xsdPath;
 
@@ -17,7 +19,8 @@ public class FontValidationTask extends Task<List<String>> {
     }
 
     private String getReport() {
-        return validator.validateFont(filePath, xsdPath);
+//        return termValidator.writeErrorsToDocument(filePath);
+        return fontValidator.validateFont(filePath, xsdPath);
     }
 
     @Override

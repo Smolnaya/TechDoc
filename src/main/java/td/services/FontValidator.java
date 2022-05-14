@@ -99,7 +99,11 @@ public class FontValidator {
                                 List<String> trErrors = textRangeRule.compare(trInfo);
                                 if (!trErrors.isEmpty()) {
                                     for (String error : trErrors) {
-                                        paragraph.appendComment(error);
+                                        Comment comment = new Comment(document);
+                                        comment.getBody().addParagraph().setText(error);
+                                        comment.getFormat().setAuthor("TechDoc");
+                                        paragraph.getChildObjects().add(comment);
+//                                        paragraph.appendComment(error);
                                     }
                                 }
                             }

@@ -26,6 +26,7 @@ import td.services.DocFileCreator;
 import td.services.Translator;
 import td.services.XmlRulesGetter;
 import td.tasks.FontValidationTask;
+import td.tasks.TermValidationTask;
 import td.tasks.ValidationTask;
 
 import java.io.*;
@@ -38,6 +39,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class StartController extends Window {
+
+    @FXML
+    private Button termButton;
 
     @FXML
     private Label fileNameLabel;
@@ -366,6 +370,34 @@ public class StartController extends Window {
         } catch (IOException ex) {
             log.log(Level.WARNING, ex.getMessage());
         }
+    }
+
+    @FXML
+    void clickTermButton() {
+        if (docFile != null) {
+            String xsdPath = null;
+            for (Map.Entry<String, String> entry : schemas.entrySet()) {
+                if (entry.getKey().equals(documentTypeComboBox.getValue())) {
+                    xsdPath = entry.getValue();
+                }
+            }
+            setBlock(true);
+            TermValidationTask task = new TermValidationTask(docFile.getAbsolutePath());
+
+            task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+                    new EventHandler<WorkerStateEvent>() {
+                        @Override
+                        public void handle(WorkerStateEvent t) {
+                            List<String> report = task.getValue();
+                            for (String s : report) {
+                                reportTextArea.appendText(s + "\n");
+                            }
+                            setBlock(false);
+                        }
+                    });
+            new Thread(task).start();
+        } else
+            reportTextArea.appendText("\nНадо выбрать файл");
     }
 
     @FXML
