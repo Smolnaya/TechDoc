@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DbSql {
-    private final String dbPath = "tddb.db";
+    private final String dbPath = "/libs/tddb.db";
     private final Logger log = Logger.getLogger(getClass().getName());
     private final DbService service = new DbService();
     // TODO: добавить проверку -> запрет на разные стили у элементов одного уровня
@@ -20,7 +20,9 @@ public class DbSql {
 
     // выбрать id xsd по пути
     public int getTempID(String path) {
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+        try  {
+            Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             String query = "SELECT temp_id FROM templates WHERE temp_path = '%s'";
             ResultSet rs = conn.createStatement().executeQuery(String.format(query, path));
             if (rs.next()) {
@@ -32,6 +34,8 @@ public class DbSql {
         } catch (SQLException ex) {
             log.log(Level.WARNING, "Не удалось выполнить 'getTempID()'", ex);
             return -1;
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Failed to load SQLite JDBC class", e);
         }
     }
 
