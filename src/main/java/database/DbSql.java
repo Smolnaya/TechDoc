@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DbSql {
-    private final String dbPath = "/libs/tddb.db";
+    private final String dbPath = System.getProperty("user.dir") + "/libs/tddb.db";
     private final Logger log = Logger.getLogger(getClass().getName());
     private final DbService service = new DbService();
     // TODO: добавить проверку -> запрет на разные стили у элементов одного уровня

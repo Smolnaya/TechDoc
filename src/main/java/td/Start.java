@@ -8,7 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import td.services.JMorfSdkManager;
+
+import java.util.Objects;
 
 public class Start extends Application {
     public static void main(String[] args) throws Exception {
@@ -31,8 +32,7 @@ public class Start extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent root = (Parent) loader.load(getClass().getResourceAsStream("/fxml/start.fxml"));
         Scene scene = new Scene(root, 960, 600);
-        String stylesheet = getClass().getResource("/css/start.css").toExternalForm();
-        scene.getStylesheets().add(stylesheet);
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/start.css")).toExternalForm());
         stage.setTitle("TechDoc");
         stage.getIcons().add(new Image("/images/clip.png"));
         stage.setScene(scene);
