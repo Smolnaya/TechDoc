@@ -35,6 +35,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -364,7 +365,9 @@ public class StartController extends Window {
         log.log(Level.INFO, "Открывается окно Шаблоны");
         Stage stage = new Stage();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/template.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/template.fxml"));
+            Parent root = loader.load();
+            root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/start.css")).toExternalForm());
             stage.setTitle("Шаблоны");
             openNewWindow(stage, root, templateButton);
         } catch (IOException ex) {
@@ -440,6 +443,7 @@ public class StartController extends Window {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/styleEditor.fxml"));
             Parent root = loader.load();
+            root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/start.css")).toExternalForm());
             Stage stage = new Stage();
             stage.setTitle("Стили");
             StyleEditorController controller = loader.getController();

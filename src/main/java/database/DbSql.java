@@ -407,5 +407,22 @@ public class DbSql {
             return new ArrayList<>();
         }
     }
+
+    public List<String> getStyleNames() {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath)) {
+            String query = "select style_name from styles;";
+            ResultSet rs = conn.createStatement().executeQuery(query);
+            List<String> styleNameList = new ArrayList<>();
+            if (rs.next()) {
+                do {
+                    styleNameList.add(rs.getString(1));
+                } while (rs.next());
+                return styleNameList;
+            } else return new ArrayList<>();
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "Не удалось выполнить 'getStyleNames()'", ex);
+            return new ArrayList<>();
+        }
+    }
 }
 

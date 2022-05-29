@@ -67,7 +67,7 @@ public class StyleEditorController extends Window {
 
     @FXML
     public void initialize() {
-        log.log(Level.INFO, "initialize()");
+        log.log(Level.INFO, "Открыто окно редактора стилей");
     }
 
     public void initData(String path) {
